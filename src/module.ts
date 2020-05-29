@@ -1,6 +1,6 @@
 import { PanelPlugin } from '@grafana/data';
 import { SimpleOptions } from './types';
-import { SiteInformation } from './SiteInformation';
+import { ThreePhaseMonitor } from './ThreePhaseMonitor';
 
-export const plugin = new PanelPlugin<SimpleOptions>(SiteInformation)
+export const plugin = new PanelPlugin<SimpleOptions>(ThreePhaseMonitor)
   .useFieldConfig();

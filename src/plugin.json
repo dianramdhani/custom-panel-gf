@@ -1,9 +1,9 @@
 {
   "type": "panel",
-  "name": "Site Information",
-  "id": "tritronik-site-information",
+  "name": "Three Phase Monitor",
+  "id": "tritronik-3phase-monitor",
   "info": {
-    "description": "Site information.",
+    "description": "Power 3 phase monitor.",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"

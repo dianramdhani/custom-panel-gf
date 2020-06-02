@@ -1,6 +1,6 @@
 import { PanelPlugin } from '@grafana/data';
 import { SimpleOptions } from './types';
-import { DCRectifierMonitor } from './DCRectifierMonitor';
+import { GensetMonitor } from './GensetMonitor';
 
-export const plugin = new PanelPlugin<SimpleOptions>(DCRectifierMonitor)
+export const plugin = new PanelPlugin<SimpleOptions>(GensetMonitor)
   .useFieldConfig();

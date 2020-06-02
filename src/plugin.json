@@ -1,9 +1,9 @@
 {
   "type": "panel",
-  "name": "DC Rectifier Monitor",
-  "id": "tritronik-dc-rectifier-monitor",
+  "name": "Genset Monitor",
+  "id": "tritronik-genset-monitor",
   "info": {
-    "description": "DC Rectifier Monitor",
+    "description": "Genset Monitor",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"

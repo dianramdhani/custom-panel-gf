@@ -9,7 +9,7 @@ import {
 import { Gauge } from '@grafana/ui';
 import { config } from '@grafana/runtime';
 
-export class GensetMonitor extends PureComponent<PanelProps> {
+export class FuelMonitor extends PureComponent<PanelProps> {
     render() {
         const numeric = 20,
             text = `${getValueFormat(this.props.fieldConfig.defaults.unit)(numeric).text}${getValueFormat(this.props.fieldConfig.defaults.unit)(numeric).suffix}`,

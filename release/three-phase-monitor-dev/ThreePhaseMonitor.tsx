@@ -51,7 +51,7 @@ export const ThreePhaseMonitor: React.FC<PanelProps> = (props) => {
             <div className="w3-display-middle" style={{ width: '100%' }}>
                 <div className="w3-row w3-section">
                     <div className="w3-third w3-center">
-                        <h5>Phase R</h5>
+                        <h5 className="w3-pink">Phase R</h5>
                         <div className="tr-big-value">
                             <div className="w3-margin-bottom">
                                 <h1>{getLastValue(voltR)?.text}<span>{getLastValue(voltR)?.suffix}</span></h1>
@@ -64,7 +64,7 @@ export const ThreePhaseMonitor: React.FC<PanelProps> = (props) => {
                         </div>
                     </div>
                     <div className="w3-third w3-center">
-                        <h5>Phase S</h5>
+                        <h5 className="w3-orange w3-text-white">Phase S</h5>
                         <div className="tr-big-value">
                             <div className="w3-margin-bottom">
                                 <h1>{getLastValue(voltS)?.text}<span>{getLastValue(voltS)?.suffix}</span></h1>
@@ -77,7 +77,7 @@ export const ThreePhaseMonitor: React.FC<PanelProps> = (props) => {
                         </div>
                     </div>
                     <div className="w3-third w3-center">
-                        <h5>Phase T</h5>
+                        <h5 className="w3-blue">Phase T</h5>
                         <div className="tr-big-value">
                             <div className="w3-margin-bottom">
                                 <h1>{getLastValue(voltT)?.text}<span>{getLastValue(voltT)?.suffix}</span></h1>

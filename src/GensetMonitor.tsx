@@ -1,5 +1,5 @@
-import './styles/w3.css';
-import './styles/style.scss';
+import '../styles/w3.css';
+import '../styles/style.scss';
 
 import React, { PureComponent } from 'react';
 import { PanelProps } from '@grafana/data';

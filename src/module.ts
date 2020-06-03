@@ -1,6 +1,6 @@
 import { PanelPlugin } from '@grafana/data';
 import { SimpleOptions } from './types';
-import { GensetMonitor } from './GensetMonitor';
+import { FuelMonitor } from './FuelMonitor';
 
-export const plugin = new PanelPlugin<SimpleOptions>(GensetMonitor)
+export const plugin = new PanelPlugin<SimpleOptions>(FuelMonitor)
   .useFieldConfig();

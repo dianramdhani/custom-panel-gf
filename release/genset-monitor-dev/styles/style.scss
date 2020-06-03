@@ -1,0 +1,21 @@
+.tr-big-value {
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+
+    h1 {
+        margin: 0;
+
+        span {
+            font-size: 24px !important;
+        }
+    }
+
+    .tr-min-val {
+        margin-right: 16px !important;
+        color: #e91e63 !important;
+    }
+
+    .tr-max-val {
+        color: #00bcd4 !important;
+    }
+}

@@ -1,9 +1,9 @@
 {
   "type": "panel",
-  "name": "Fuel Monitor",
-  "id": "tritronik-fuel-monitor",
+  "name": "Genset Monitor",
+  "id": "tritronik-genset-monitor",
   "info": {
-    "description": "Fuel Monitor",
+    "description": "Genset Monitor",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"

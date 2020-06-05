@@ -7,13 +7,10 @@ import {
     DataFrame,
     getValueFormat,
 } from '@grafana/data';
-// import { Icon } from '@grafana/ui';
 
 export const DCRectifierMonitor: React.FC<PanelProps> = (props) => {
     const data = props.data,
-        activeenergy = data.series.find(_ => _.name === 'activeenergy'),
-        current = data.series.find(_ => _.name === 'current'),
-        volt = data.series.find(_ => _.name === 'volt');
+        current = data.series.find(_ => _.name === 'current');
 
     const getLastValue = (data: DataFrame | undefined) => {
         if (data) {

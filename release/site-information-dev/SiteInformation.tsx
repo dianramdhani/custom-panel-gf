@@ -7,7 +7,7 @@ import {
     PanelProps,
     PanelData
 } from '@grafana/data';
-import { Badge } from '@grafana/ui';
+// import { Badge } from '@grafana/ui';
 
 export const SiteInformation: React.FC<PanelProps> = (props) => {
     const data: PanelData = props.data,
@@ -31,6 +31,9 @@ export const SiteInformation: React.FC<PanelProps> = (props) => {
             .then((res: OpenWeatherData) => setState(res));
     }
 
+    const [cssHasLoaded, setStateCss] = useState<boolean>(false);
+    setTimeout(() => setStateCss(true), 1000);
+
     return (
         <div className="w3-display-container tr-full">
             <div className="w3-display-middle tr-wd-100">
@@ -38,13 +41,26 @@ export const SiteInformation: React.FC<PanelProps> = (props) => {
                     <div className="w3-half">
                         <table style={{ margin: 'auto' }}>
                             <tr>
-                                <td style={{ width: 50, verticalAlign: 'top' }}><i className="material-icons md-36 w3-text-pink">location_on</i></td>
+                                <td style={{ width: 50, verticalAlign: 'top' }}>
+                                    {
+                                        cssHasLoaded ?
+                                            <i className="material-icons md-36 w3-text-pink">location_on</i> :
+                                            null
+                                    }
+                                </td>
                                 <td>
                                     <div className="w3-margin-bottom">
                                         <h2 style={{ margin: 0 }}>{String(name).replace('Site', '')}</h2>
                                         <span className="w3-text-blue-gray">{region}</span>
                                     </div>
-                                    <Badge text={`Last Update: ${lastConnected}`} icon="clock-nine" color="blue" />
+                                    <div style={{ display: 'flex', verticalAlign: 'middle' }}>
+                                        {
+                                            cssHasLoaded ?
+                                                <i className="material-icons w3-text-light-green">fiber_manual_record</i> :
+                                                null
+                                        }
+                                        Last Update: {lastConnected}
+                                    </div>
                                 </td>
                             </tr>
                         </table>

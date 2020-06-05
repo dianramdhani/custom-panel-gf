@@ -1,4 +1,6 @@
-import './w3.css';
+import '../styles/w3.css';
+import '../styles/style.scss';
+import '../styles/material-icon.scss';
 
 import React, { useState } from 'react';
 import {
@@ -30,33 +32,46 @@ export const SiteInformation: React.FC<PanelProps> = (props) => {
     }
 
     return (
-        <div className="w3-display-container" style={{ width: '100%', height: '100%' }}>
-            <div className="w3-display-middle" style={{ width: '100%' }}>
+        <div className="w3-display-container tr-full">
+            <div className="w3-display-middle tr-wd-100">
                 <div className="w3-row">
-                    <div className="w3-half w3-container w3-center">
-                        <div className="w3-section">
-                            <h3 style={{ margin: 0 }}>{name}</h3>
-                            <span>{region}</span>
-                        </div>
-                        <Badge text={`Last Update: ${lastConnected}`} icon="clock-nine" color="blue"></Badge>
-                    </div>
-                    {state ? <div className="w3-half">
-                        <div className="w3-row">
-                            <div className="w3-col w3-margin-right w3-center" style={{ width: 150 }}>
-                                <img style={{ position: "relative", marginTop: -20 }} src={state ? `http://openweathermap.org/img/wn/${state.current.weather[0].icon}@2x.png` : ''} />
-                                <h4 style={{ margin: 0 }}>{state?.current.weather[0].main}</h4>
-                                <small>{state?.current.weather[0].description}</small>
-                            </div>
+                    <div className="w3-half w3-container">
+                        <div className="w3-row tr-center">
+                            <div className="w3-col" style={{ width: 50 }}><i className="material-icons md-36 w3-text-pink">location_on</i></div>
                             <div className="w3-rest">
-                                <h6 style={{ marginBottom: 0 }}>Temperature</h6>
-                                <div className="w3-margin-left w3-large">{state?.current.temp}<span className="w3-medium"> °C</span></div>
-                                <h6 style={{ marginBottom: 0 }}>Humidity</h6>
-                                <div className="w3-margin-left w3-large">{state?.current.humidity}<span className="w3-medium"> %</span></div>
-                                <h6 style={{ marginBottom: 0 }}>Wind</h6>
-                                <div className="w3-margin-left w3-large">{state?.current.wind_speed} <span className="w3-medium">m/s</span> | {state?.current.wind_deg}<span className="w3-medium"> deg</span></div>
+                                <div className="w3-margin-bottom">
+                                    <h2 style={{ margin: 0 }}>{String(name).replace('Site', '')}</h2>
+                                    <span className="w3-text-blue-gray">{region}</span>
+                                </div>
+                                <Badge text={`Last Update: ${lastConnected}`} icon="clock-nine" color="blue" />
                             </div>
                         </div>
-                    </div> : null}
+                    </div>
+                    {
+                        state ?
+                            <div className="w3-half">
+                                <div className="w3-row">
+                                    <div className="w3-col w3-margin-right w3-center" style={{ width: 100 }}>
+                                        <img style={{ position: "relative", marginTop: -20 }} src={state ? `http://openweathermap.org/img/wn/${state.current.weather[0].icon}@2x.png` : ''} />
+                                        <h4 style={{ margin: -20 }}>{state?.current.weather[0].main}</h4>
+                                    </div>
+                                    <div className="w3-rest tr-big-value">
+                                        <h1>{state?.current.temp}<span> °C</span></h1>
+                                        <div className="w3-section">
+                                            <div className="w3-text-blue-gray w3-large" style={{ display: 'flex', verticalAlign: 'middle' }}>
+                                                <i className="material-icons w3-margin-right">grain</i>
+                                                <div>{state?.current.humidity}<span className="w3-medium"> %</span></div>
+                                            </div>
+                                            <div className="w3-text-blue-gray w3-large" style={{ display: 'flex', verticalAlign: 'middle' }}>
+                                                <i className="material-icons w3-margin-right">toys</i>
+                                                <div>{state?.current.wind_speed} <span className="w3-medium">m/s</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> :
+                            null
+                    }
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@
   "name": "Site Information",
   "id": "tritronik-site-information",
   "info": {
-    "description": "Site information.",
+    "description": "Site information",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"
@@ -27,7 +27,7 @@
     ],
     "screenshots": [],
     "version": "1.0.0",
-    "updated": "2020-05-29"
+    "updated": "2020-06-05"
   },
   "dependencies": {
     "grafanaVersion": "6.3.x",

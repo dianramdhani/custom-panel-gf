@@ -1,9 +1,9 @@
 {
   "type": "panel",
-  "name": "DC Rectifier Monitor",
-  "id": "tritronik-dc-rectifier-monitor",
+  "name": "Three Phase Monitor",
+  "id": "tritronik-3phase-monitor",
   "info": {
-    "description": "DC Rectifier Monitor",
+    "description": "Power 3 phase monitor.",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"

@@ -1,5 +1,5 @@
 import { PanelPlugin } from '@grafana/data';
 import { SimpleOptions } from './types';
-import { DCRectifierMonitor } from './DCRectifierMonitor';
+import { AlarmSummary } from './AlarmSummary';
 
-export const plugin = new PanelPlugin<SimpleOptions>(DCRectifierMonitor).useFieldConfig();
+export const plugin = new PanelPlugin<SimpleOptions>(AlarmSummary).useFieldConfig();

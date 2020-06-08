@@ -3,7 +3,6 @@ import '../styles/style.scss';
 
 import React from 'react';
 import { PanelProps, DataFrame, getValueFormat } from '@grafana/data';
-import { ansicolor, colors, getTagColorsFromName, getTheme } from '@grafana/ui';
 
 export const DCRectifierMonitor: React.FC<PanelProps> = props => {
   const data = props.data,
@@ -24,7 +23,7 @@ export const DCRectifierMonitor: React.FC<PanelProps> = props => {
           steps = data.fields[1].config.thresholds?.steps || [];
 
         if (steps.length) {
-          const colorPalette = {
+          const colorPalette: { [index: string]: any } = {
             green: '#73BF69',
             'dark-green': '#37872D',
             'semi-dark-green': '#56A64B',
@@ -61,19 +60,12 @@ export const DCRectifierMonitor: React.FC<PanelProps> = props => {
             'light-purple': '#CA95E5',
             'super-light-purple': '#DEB6F2',
           };
+
           let indexStep = steps.findIndex(step => step.value > value) - 1;
           indexStep = indexStep === -2 ? steps.length - 1 : indexStep;
 
-          const color = steps[indexStep].color;
-          console.log(
-            'testing',
-            color,
-            new ansicolor(color),
-            colors,
-            color,
-            getTagColorsFromName(color),
-            getTheme(color)
-          );
+          const color = colorPalette[steps[indexStep].color] || steps[indexStep].color;
+
           return color;
         } else {
           return;

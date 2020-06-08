@@ -1,9 +1,9 @@
 {
   "type": "panel",
-  "name": "Site Information",
-  "id": "tritronik-site-information",
+  "name": "DC Rectifier Monitor",
+  "id": "tritronik-dc-rectifier-monitor",
   "info": {
-    "description": "Site information",
+    "description": "DC Rectifier Monitor",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"

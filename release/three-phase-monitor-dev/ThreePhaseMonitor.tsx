@@ -1,4 +1,5 @@
-import './w3.css';
+import '../styles/w3.css';
+import '../styles/style.scss';
 
 import React from 'react';
 import {
@@ -31,28 +32,28 @@ export const ThreePhaseMonitor: React.FC<PanelProps> = (props) => {
     return (
         <div className="w3-display-container" style={{ width: '100%', height: '100%' }}>
             <div className="w3-display-middle" style={{ width: '100%' }}>
-                <div className="w3-row w3-section">
+                <div className="w3-center tr-big-value">
+                    <h1>25.421 <span> kWh</span></h1>
+                </div>
+                <div className="w3-row tr-big-value tr-middle-value">
                     <div className="w3-third w3-center">
-                        <h5>Phase R</h5>
-                        <div className="w3-section">
-                            <h1>{getLastValue(voltR)?.text}<span className="w3-xlarge">{getLastValue(voltR)?.suffix}</span></h1>
-                            <h1>{getLastValue(currR)?.text}<span className="w3-xlarge">{getLastValue(currR)?.suffix}</span></h1>
-                        </div>
+                        <h5>R</h5>
+                        <h1>{getLastValue(currR)?.text}<span>{getLastValue(currR)?.suffix}</span></h1>
+                        <h3>{getLastValue(voltR)?.text}<span>{getLastValue(voltR)?.suffix}</span></h3>
                     </div>
                     <div className="w3-third w3-center">
-                        <h5>Phase S</h5>
-                        <div className="w3-section">
-                            <h1>{getLastValue(voltS)?.text}<span className="w3-xlarge">{getLastValue(voltS)?.suffix}</span></h1>
-                            <h1>{getLastValue(currS)?.text}<span className="w3-xlarge">{getLastValue(currS)?.suffix}</span></h1>
-                        </div>
+                        <h5>S</h5>
+                        <h1>{getLastValue(currS)?.text}<span>{getLastValue(currS)?.suffix}</span></h1>
+                        <h3>{getLastValue(voltS)?.text}<span>{getLastValue(voltS)?.suffix}</span></h3>
                     </div>
                     <div className="w3-third w3-center">
-                        <h5>Phase T</h5>
-                        <div className="w3-section">
-                            <h1>{getLastValue(voltT)?.text}<span className="w3-xlarge">{getLastValue(voltT)?.suffix}</span></h1>
-                            <h1>{getLastValue(currT)?.text}<span className="w3-xlarge">{getLastValue(currT)?.suffix}</span></h1>
-                        </div>
+                        <h5>T</h5>
+                        <h1>{getLastValue(currT)?.text}<span>{getLastValue(currT)?.suffix}</span></h1>
+                        <h3>{getLastValue(voltT)?.text}<span>{getLastValue(voltT)?.suffix}</span></h3>
                     </div>
+                </div>
+                <div className="w3-center tr-middle-value">
+                    <h3>60 <span> Hz</span></h3>
                 </div>
             </div>
         </div>

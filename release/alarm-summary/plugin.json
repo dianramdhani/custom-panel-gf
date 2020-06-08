@@ -1,9 +1,9 @@
 {
   "type": "panel",
-  "name": "Genset Monitor",
-  "id": "tritronik-genset-monitor",
+  "name": "Alarm Summary",
+  "id": "tritronik-alarm-summary",
   "info": {
-    "description": "Genset Monitor",
+    "description": "Alarm Summary",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"

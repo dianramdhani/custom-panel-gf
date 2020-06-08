@@ -1,9 +1,9 @@
 {
   "type": "panel",
-  "name": "Fuel Monitor",
-  "id": "tritronik-fuel-monitor",
+  "name": "Site Information",
+  "id": "tritronik-site-information",
   "info": {
-    "description": "Fuel Monitor",
+    "description": "Site information",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"

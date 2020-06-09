@@ -1,4 +1,4 @@
-import './w3.css';
+import '../styles/w3.css';
 
 import React, { PureComponent } from 'react';
 import { PanelProps, Field, getValueFormat } from '@grafana/data';

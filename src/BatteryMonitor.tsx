@@ -2,16 +2,15 @@ import '../styles/w3.css';
 import '../styles/style.scss';
 
 import React from 'react';
-import { PanelProps, PanelData, DataFrame, getValueFormat } from '@grafana/data';
+import { PanelProps, VizOrientation, DataFrame, getValueFormat } from '@grafana/data';
+import { BarGauge, BarGaugeDisplayMode, HorizontalGroup } from '@grafana/ui';
 
-export const ThreePhaseMonitor: React.FC<PanelProps> = props => {
-  const data: PanelData = props.data,
-    currR = data.series.find(_ => _.name === 'currR'),
-    currS = data.series.find(_ => _.name === 'currS'),
-    currT = data.series.find(_ => _.name === 'currT'),
-    voltR = data.series.find(_ => _.name === 'voltR'),
-    voltS = data.series.find(_ => _.name === 'voltS'),
-    voltT = data.series.find(_ => _.name === 'voltT');
+export const BatteryMonitor: React.FC<PanelProps> = props => {
+  const data = props.data,
+    cell1 = data.series.find(_ => _.name === 'cell1'),
+    temp1 = data.series.find(_ => _.name === 'temp1'),
+    rest1 = data.series.find(_ => _.name === 'rest1'),
+    soc1 = data.series.find(_ => _.name === 'soc1');
 
   const getLastValue = (data: DataFrame | undefined) => {
       if (data) {
@@ -83,50 +82,47 @@ export const ThreePhaseMonitor: React.FC<PanelProps> = props => {
   return (
     <div className="w3-display-container" style={{ width: '100%', height: '100%' }}>
       <div className="w3-display-middle" style={{ width: '100%' }}>
-        <div className="w3-center tr-big-value">
-          <h1>
-            25.421 <span> kWh</span>
-          </h1>
-        </div>
-        <div className="w3-row tr-big-value tr-middle-value">
-          <div className="w3-third w3-center">
-            <h5>R</h5>
-            <h1 style={{ color: getColor(currR) }}>
-              {getLastValue(currR)?.text}
-              <span>{getLastValue(currR)?.suffix}</span>
+        <HorizontalGroup justify="center">
+          <div className="w3-margin-right tr-big-value">
+            <h1 style={{ color: getColor(soc1) }}>
+              {getLastValue(soc1)?.text}
+              <span className="w3-xxlarge">{getLastValue(soc1)?.suffix}</span>
             </h1>
-            <h3 style={{ color: getColor(voltR) }}>
-              {getLastValue(voltR)?.text}
-              <span>{getLastValue(voltR)?.suffix}</span>
+          </div>
+          <BarGauge
+            orientation={VizOrientation.Horizontal}
+            displayMode={BarGaugeDisplayMode.Lcd}
+            height={50}
+            width={200}
+            theme={{} as any}
+            value={{
+              text: '',
+              title: '',
+              numeric: soc1?.fields[1].values.get(0),
+            }}
+            field={soc1?.fields[1].config}
+            display={soc1?.fields[1].display}
+          ></BarGauge>
+        </HorizontalGroup>
+        <div className="w3-row tr-middle-value">
+          <div className="w3-third w3-center">
+            <h3 style={{ color: getColor(cell1) }}>
+              {getLastValue(cell1)?.text}
+              <span>{getLastValue(cell1)?.suffix}</span>
             </h3>
           </div>
           <div className="w3-third w3-center">
-            <h5>S</h5>
-            <h1 style={{ color: getColor(currS) }}>
-              {getLastValue(currS)?.text}
-              <span>{getLastValue(currS)?.suffix}</span>
-            </h1>
-            <h3 style={{ color: getColor(voltS) }}>
-              {getLastValue(voltS)?.text}
-              <span>{getLastValue(voltS)?.suffix}</span>
+            <h3 style={{ color: getColor(rest1) }}>
+              {getLastValue(rest1)?.text}
+              <span>{getLastValue(rest1)?.suffix}</span>
             </h3>
           </div>
           <div className="w3-third w3-center">
-            <h5>T</h5>
-            <h1 style={{ color: getColor(currT) }}>
-              {getLastValue(currT)?.text}
-              <span>{getLastValue(currT)?.suffix}</span>
-            </h1>
-            <h3 style={{ color: getColor(voltT) }}>
-              {getLastValue(voltT)?.text}
-              <span>{getLastValue(voltT)?.suffix}</span>
+            <h3 style={{ color: getColor(temp1) }}>
+              {getLastValue(temp1)?.text}
+              <span>{getLastValue(temp1)?.suffix}</span>
             </h3>
           </div>
-        </div>
-        <div className="w3-center tr-middle-value">
-          <h3>
-            60 <span> Hz</span>
-          </h3>
         </div>
       </div>
     </div>

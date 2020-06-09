@@ -1,9 +1,9 @@
 {
   "type": "panel",
-  "name": "Three Phase Monitor",
-  "id": "tritronik-3phase-monitor",
+  "name": "Battery Monitor",
+  "id": "tritronik-battery-monitor",
   "info": {
-    "description": "Power 3 phase monitor.",
+    "description": "Battery monitor.",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"

@@ -6,7 +6,8 @@ import { PanelProps, DataFrame, getValueFormat } from '@grafana/data';
 
 export const DCRectifierMonitor: React.FC<PanelProps> = props => {
   const data = props.data,
-    current = data.series.find(_ => _.name === 'current');
+    current = data.series.find(_ => _.name === 'current'),
+    volt = data.series.find(_ => _.name === 'volt');
 
   const getLastValue = (data: DataFrame | undefined) => {
       if (data) {
@@ -91,8 +92,9 @@ export const DCRectifierMonitor: React.FC<PanelProps> = props => {
             </h3>
           </div>
           <div className="w3-third w3-center">
-            <h3>
-              52<span> VDC</span>
+            <h3 style={{ color: getColor(volt) }}>
+              {getLastValue(volt)?.text}
+              <span>{getLastValue(volt)?.suffix}</span>
             </h3>
           </div>
           <div className="w3-third w3-center">

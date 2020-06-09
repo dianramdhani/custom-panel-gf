@@ -4,6 +4,7 @@ import '../styles/style.scss';
 import React from 'react';
 import { PanelProps, VizOrientation, DataFrame, getValueFormat } from '@grafana/data';
 import { BarGauge, BarGaugeDisplayMode, HorizontalGroup } from '@grafana/ui';
+import { config } from '@grafana/runtime';
 
 export const BatteryMonitor: React.FC<PanelProps> = props => {
   const data = props.data,
@@ -94,7 +95,7 @@ export const BatteryMonitor: React.FC<PanelProps> = props => {
             displayMode={BarGaugeDisplayMode.Lcd}
             height={50}
             width={200}
-            theme={{} as any}
+            theme={config.theme}
             value={{
               text: '',
               title: '',

@@ -36,7 +36,7 @@ export const SiteInformation: React.FC<PanelProps> = props => {
     <div className="w3-display-container tr-full">
       <div className="w3-display-middle tr-wd-100">
         <div className="w3-row">
-          <div className="w3-half">
+          <div className="w3-half w3-section">
             <table style={{ margin: 'auto' }}>
               <tr>
                 <td style={{ width: 50, verticalAlign: 'top' }}>
@@ -56,8 +56,8 @@ export const SiteInformation: React.FC<PanelProps> = props => {
             </table>
           </div>
           {state ? (
-            <div className="w3-half">
-              <table style={{ margin: 'auto' }}>
+            <div className="w3-half w3-section tr-weather">
+              <table>
                 <tr>
                   <td style={{ width: 130, verticalAlign: 'top' }}>
                     <div className="w3-margin-right w3-center">

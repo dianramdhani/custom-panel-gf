@@ -1,15 +1,15 @@
 {
   "type": "panel",
-  "name": "Site Information",
-  "id": "tritronik-site-information",
+  "name": "Switch Control",
+  "id": "tritronik-switch-control",
   "info": {
-    "description": "Site information",
+    "description": "Switch Control",
     "author": {
       "name": "Dian Ramdhani Lubis",
       "url": "www.tritronik.com"
     },
     "keywords": [
-      "monitor"
+      "control"
     ],
     "logos": {
       "small": "img/logo.svg",

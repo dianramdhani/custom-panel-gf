@@ -96,3 +96,12 @@
     margin: auto;
   }
 }
+
+.tr-genset-time {
+  text-align: right !important;
+}
+@media (min-width: 480px) {
+  .tr-genset-time {
+    text-align: center !important;
+  }
+}

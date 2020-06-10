@@ -1,4 +1,5 @@
 import '../styles/w3.css';
+import '../styles/style.scss';
 
 import React, { PureComponent } from 'react';
 import { PanelProps, Field, getValueFormat } from '@grafana/data';
@@ -25,7 +26,7 @@ export class GensetMonitor extends PureComponent<PanelProps> {
       <div className="w3-display-container" style={{ width: '100%', height: '100%' }}>
         <div className="w3-display-middle" style={{ width: '100%' }}>
           <div className="w3-row">
-            <div className="w3-half">
+            <div className="w3-col" style={{ width: '50%' }}>
               <Gauge
                 value={{ numeric, text, title }}
                 width={150}
@@ -34,7 +35,7 @@ export class GensetMonitor extends PureComponent<PanelProps> {
                 theme={config.theme}
               />
             </div>
-            <div className="w3-half w3-center">
+            <div className="w3-col w3-container tr-genset-time" style={{ width: '50%' }}>
               <h5>Running Time</h5>
               <div className="tr-big-value">
                 <h1>
@@ -50,17 +51,17 @@ export class GensetMonitor extends PureComponent<PanelProps> {
             </div>
           </div>
           <div className="w3-row tr-middle-value">
-            <div className="w3-third w3-center">
+            <div className="w3-col w3-center" style={{ width: '33.3%' }}>
               <h3>
                 220<span> V</span>
               </h3>
             </div>
-            <div className="w3-third w3-center">
+            <div className="w3-col w3-center" style={{ width: '33.3%' }}>
               <h3>
                 16<span> A</span>
               </h3>
             </div>
-            <div className="w3-third w3-center">
+            <div className="w3-col w3-center" style={{ width: '33.3%' }}>
               <h3>
                 60<span> Hz</span>
               </h3>

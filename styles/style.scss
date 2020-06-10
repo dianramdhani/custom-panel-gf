@@ -64,3 +64,12 @@
 .tr-wd-100 {
   width: 100%;
 }
+
+.tr-weather table {
+  margin-left: 25px;
+}
+@media (min-width: 361px) {
+  .tr-weather table {
+    margin: auto;
+  }
+}

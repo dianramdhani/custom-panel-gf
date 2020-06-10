@@ -84,12 +84,6 @@ export const BatteryMonitor: React.FC<PanelProps> = props => {
     <div className="w3-display-container" style={{ width: '100%', height: '100%' }}>
       <div className="w3-display-middle" style={{ width: '100%' }}>
         <HorizontalGroup justify="center">
-          <div className="w3-margin-right tr-big-value">
-            <h1 style={{ color: getColor(soc1) }}>
-              {getLastValue(soc1)?.text}
-              <span className="w3-xxlarge">{getLastValue(soc1)?.suffix}</span>
-            </h1>
-          </div>
           <BarGauge
             orientation={VizOrientation.Horizontal}
             displayMode={BarGaugeDisplayMode.Lcd}
@@ -104,21 +98,27 @@ export const BatteryMonitor: React.FC<PanelProps> = props => {
             field={soc1?.fields[1].config}
             display={soc1?.fields[1].display}
           ></BarGauge>
+          <div className="tr-big-value" style={{ marginLeft: -55, display: 'block' }}>
+            <h1 style={{ color: getColor(soc1) }}>
+              {getLastValue(soc1)?.text}
+              <span className="w3-xxlarge">{getLastValue(soc1)?.suffix}</span>
+            </h1>
+          </div>
         </HorizontalGroup>
         <div className="w3-row tr-middle-value">
-          <div className="w3-third w3-center">
+          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
             <h3 style={{ color: getColor(cell1) }}>
               {getLastValue(cell1)?.text}
               <span>{getLastValue(cell1)?.suffix}</span>
             </h3>
           </div>
-          <div className="w3-third w3-center">
+          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
             <h3 style={{ color: getColor(rest1) }}>
               {getLastValue(rest1)?.text}
               <span>{getLastValue(rest1)?.suffix}</span>
             </h3>
           </div>
-          <div className="w3-third w3-center">
+          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
             <h3 style={{ color: getColor(temp1) }}>
               {getLastValue(temp1)?.text}
               <span>{getLastValue(temp1)?.suffix}</span>

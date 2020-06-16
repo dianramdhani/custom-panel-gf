@@ -15,6 +15,8 @@ export class ThreePhaseMonitor extends PureComponent<PanelProps> {
   voltR = this.data.series.find(_ => _.name === 'voltR');
   voltS = this.data.series.find(_ => _.name === 'voltS');
   voltT = this.data.series.find(_ => _.name === 'voltT');
+  frequency = this.data.series.find(_ => _.name === 'frequency');
+  totActEnergy = this.data.series.find(_ => _.name === 'totActEnergy');
 
   componentDidUpdate() {
     if (this.panelWidth) {
@@ -33,8 +35,9 @@ export class ThreePhaseMonitor extends PureComponent<PanelProps> {
       <div className="w3-display-container tr-full" ref={el => (this.panelWidth = el?.clientWidth)}>
         <div className="w3-display-middle tr-wd-100" style={{ zoom: this.scaleFont }}>
           <div className="w3-center tr-big-value">
-            <h1>
-              25.421 <span> kWh</span>
+            <h1 style={{ color: this.getColor(this.totActEnergy) }}>
+              {this.getLastValue(this.totActEnergy)?.text}
+              <span>{this.getLastValue(this.totActEnergy)?.suffix}</span>
             </h1>
           </div>
           <div className="w3-row tr-big-value tr-middle-value">
@@ -73,8 +76,9 @@ export class ThreePhaseMonitor extends PureComponent<PanelProps> {
             </div>
           </div>
           <div className="w3-center tr-middle-value">
-            <h3>
-              60 <span> Hz</span>
+            <h3 style={{ color: this.getColor(this.frequency) }}>
+              {this.getLastValue(this.frequency)?.text}
+              <span>{this.getLastValue(this.frequency)?.suffix}</span>
             </h3>
           </div>
         </div>

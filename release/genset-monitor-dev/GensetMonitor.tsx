@@ -10,13 +10,6 @@ export class GensetMonitor extends PureComponent<PanelProps> {
   panelWidth: number | undefined;
   scaleFont = 1;
 
-  data = this.props.data;
-  litre = this.data.series.find(_ => _.name === 'litre');
-  second = this.data.series.find(_ => _.name === 'second');
-  voltage = this.data.series.find(_ => _.name === 'voltage');
-  frequency = this.data.series.find(_ => _.name === 'frequency');
-  current = this.data.series.find(_ => _.name === 'current');
-
   componentDidUpdate() {
     if (this.panelWidth) {
       const maxWidth = 600;
@@ -30,15 +23,22 @@ export class GensetMonitor extends PureComponent<PanelProps> {
   }
 
   render() {
-    const numeric = this.litre?.fields[1].values.get(0),
-      text = `${this.getLastValue(this.litre)?.text}${this.getLastValue(this.litre)?.suffix}`,
+    const data = this.props.data,
+      litre = data.series.find(_ => _.name === 'litre'),
+      second = data.series.find(_ => _.name === 'second'),
+      voltage = data.series.find(_ => _.name === 'voltage'),
+      frequency = data.series.find(_ => _.name === 'frequency'),
+      current = data.series.find(_ => _.name === 'current');
+
+    const numeric = litre?.fields[1].values.get(0),
+      text = `${this.getLastValue(litre)?.text}${this.getLastValue(litre)?.suffix}`,
       title = '';
 
     const field: Partial<Field> = {
       config: {
-        min: this.litre?.fields[1].config.min || 0,
-        max: this.litre?.fields[1].config.max || 100,
-        thresholds: this.litre?.fields[1].config.thresholds,
+        min: litre?.fields[1].config.min || 0,
+        max: litre?.fields[1].config.max || 100,
+        thresholds: litre?.fields[1].config.thresholds,
       },
     };
 
@@ -58,30 +58,30 @@ export class GensetMonitor extends PureComponent<PanelProps> {
             <div className="w3-col w3-container tr-genset-time" style={{ width: '50%' }}>
               <h5>Running Time</h5>
               <div className="tr-big-value">
-                <h1 style={{ color: this.getColor(this.second) }}>
-                  {this.getLastValue(this.second)?.text}
-                  <span className="w3-xxlarge">{this.getLastValue(this.second)?.suffix}</span>
+                <h1 style={{ color: this.getColor(second) }}>
+                  {this.getLastValue(second)?.text}
+                  <span className="w3-xxlarge">{this.getLastValue(second)?.suffix}</span>
                 </h1>
               </div>
             </div>
           </div>
           <div className="w3-row tr-middle-value">
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(this.voltage) }}>
-                {this.getLastValue(this.voltage)?.text}
-                <span>{this.getLastValue(this.voltage)?.suffix}</span>
+              <h3 style={{ color: this.getColor(voltage) }}>
+                {this.getLastValue(voltage)?.text}
+                <span>{this.getLastValue(voltage)?.suffix}</span>
               </h3>
             </div>
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(this.current) }}>
-                {this.getLastValue(this.current)?.text}
-                <span>{this.getLastValue(this.current)?.suffix}</span>
+              <h3 style={{ color: this.getColor(current) }}>
+                {this.getLastValue(current)?.text}
+                <span>{this.getLastValue(current)?.suffix}</span>
               </h3>
             </div>
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(this.frequency) }}>
-                {this.getLastValue(this.frequency)?.text}
-                <span>{this.getLastValue(this.frequency)?.suffix}</span>
+              <h3 style={{ color: this.getColor(frequency) }}>
+                {this.getLastValue(frequency)?.text}
+                <span>{this.getLastValue(frequency)?.suffix}</span>
               </h3>
             </div>
           </div>

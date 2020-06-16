@@ -10,6 +10,19 @@ export class SiteInformation extends PureComponent<PanelProps> {
   panelWidth: number | undefined;
   scaleFont = 1;
 
+  data: PanelData = this.props.data;
+  latitude = this.dataGetter('latitude');
+  longitude = this.dataGetter('longitude');
+  name = this.dataGetter('name');
+  region = this.dataGetter('region');
+  lastConnected = new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  }).format(new Date(this.dataGetter('last_connected')));
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -41,23 +54,7 @@ export class SiteInformation extends PureComponent<PanelProps> {
   }
 
   render() {
-    const { cssHasLoaded, openWeatherData } = this.state,
-      data: PanelData = this.props.data,
-      dataGetter = (dataName: string) => {
-        return data.series[0].fields.find(_ => _.name === dataName)?.values.get(0);
-      };
-
-    const latitude = dataGetter('latitude'),
-      longitude = dataGetter('longitude'),
-      name = dataGetter('name'),
-      region = dataGetter('region'),
-      lastConnected = new Intl.DateTimeFormat('en-GB', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-      }).format(new Date(dataGetter('last_connected')));
+    const { cssHasLoaded, openWeatherData } = this.state;
 
     return (
       <div className="w3-display-container tr-full" ref={el => (this.panelWidth = el?.clientWidth)}>
@@ -71,12 +68,12 @@ export class SiteInformation extends PureComponent<PanelProps> {
                   </td>
                   <td>
                     <div className="w3-margin-bottom">
-                      <h2 style={{ margin: 0 }}>{String(name).replace('Site', '')}</h2>
-                      <span className="w3-text-blue-gray">{region}</span>
+                      <h2 style={{ margin: 0 }}>{String(this.name).replace('Site', '')}</h2>
+                      <span className="w3-text-blue-gray">{this.region}</span>
                     </div>
                     <div style={{ display: 'flex', verticalAlign: 'middle' }}>
                       {cssHasLoaded ? <i className="material-icons w3-text-light-green">fiber_manual_record</i> : null}
-                      Last Update: {lastConnected}
+                      Last Update: {this.lastConnected}
                     </div>
                   </td>
                 </tr>
@@ -135,6 +132,10 @@ export class SiteInformation extends PureComponent<PanelProps> {
         </div>
       </div>
     );
+  }
+
+  private dataGetter(dataName: string) {
+    return this.data.series[0].fields.find(_ => _.name === dataName)?.values.get(0);
   }
 }
 

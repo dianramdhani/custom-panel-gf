@@ -10,12 +10,6 @@ export class BatteryMonitor extends PureComponent<PanelProps> {
   panelWidth: number | undefined;
   scaleFont = 1;
 
-  data = this.props.data;
-  cell1 = this.data.series.find(_ => _.name === 'cell1');
-  temp1 = this.data.series.find(_ => _.name === 'temp1');
-  rest1 = this.data.series.find(_ => _.name === 'rest1');
-  soc1 = this.data.series.find(_ => _.name === 'soc1');
-
   componentDidUpdate() {
     if (this.panelWidth) {
       const maxWidth = 600;
@@ -29,6 +23,12 @@ export class BatteryMonitor extends PureComponent<PanelProps> {
   }
 
   render() {
+    const data = this.props.data,
+      cell1 = data.series.find(_ => _.name === 'cell1'),
+      temp1 = data.series.find(_ => _.name === 'temp1'),
+      rest1 = data.series.find(_ => _.name === 'rest1'),
+      soc1 = data.series.find(_ => _.name === 'soc1');
+
     return (
       <div className="w3-display-container tr-full" ref={el => (this.panelWidth = el?.clientWidth)}>
         <div className="w3-display-middle tr-wd-100" style={{ zoom: this.scaleFont }}>
@@ -42,35 +42,35 @@ export class BatteryMonitor extends PureComponent<PanelProps> {
               value={{
                 text: '',
                 title: '',
-                numeric: this.soc1?.fields[1].values.get(0),
+                numeric: soc1?.fields[1].values.get(0),
               }}
-              field={this.soc1?.fields[1].config}
-              display={this.soc1?.fields[1].display}
+              field={soc1?.fields[1].config}
+              display={soc1?.fields[1].display}
             ></BarGauge>
             <div className="tr-big-value" style={{ marginLeft: -10, display: 'block' }}>
-              <h1 style={{ color: this.getColor(this.soc1) }}>
-                {this.getLastValue(this.soc1)?.text}
-                <span className="w3-xxlarge">{this.getLastValue(this.soc1)?.suffix}</span>
+              <h1 style={{ color: this.getColor(soc1) }}>
+                {this.getLastValue(soc1)?.text}
+                <span className="w3-xxlarge">{this.getLastValue(soc1)?.suffix}</span>
               </h1>
             </div>
           </HorizontalGroup>
           <div className="w3-row tr-middle-value">
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(this.cell1) }}>
-                {this.getLastValue(this.cell1)?.text}
-                <span>{this.getLastValue(this.cell1)?.suffix}</span>
+              <h3 style={{ color: this.getColor(cell1) }}>
+                {this.getLastValue(cell1)?.text}
+                <span>{this.getLastValue(cell1)?.suffix}</span>
               </h3>
             </div>
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(this.rest1) }}>
-                {this.getLastValue(this.rest1)?.text}
-                <span>{this.getLastValue(this.rest1)?.suffix}</span>
+              <h3 style={{ color: this.getColor(rest1) }}>
+                {this.getLastValue(rest1)?.text}
+                <span>{this.getLastValue(rest1)?.suffix}</span>
               </h3>
             </div>
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(this.temp1) }}>
-                {this.getLastValue(this.temp1)?.text}
-                <span>{this.getLastValue(this.temp1)?.suffix}</span>
+              <h3 style={{ color: this.getColor(temp1) }}>
+                {this.getLastValue(temp1)?.text}
+                <span>{this.getLastValue(temp1)?.suffix}</span>
               </h3>
             </div>
           </div>

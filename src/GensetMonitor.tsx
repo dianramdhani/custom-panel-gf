@@ -43,8 +43,8 @@ export class GensetMonitor extends PureComponent<PanelProps> {
     };
 
     return (
-      <div className="w3-display-container tr-full">
-        <div className="w3-display-middle tr-wd-100">
+      <div className="w3-display-container tr-full" ref={el => (this.panelWidth = el?.clientWidth)}>
+        <div className="w3-display-middle tr-wd-100" style={{ zoom: this.scaleFont }}>
           <div className="w3-row">
             <div className="w3-col" style={{ width: '50%' }}>
               <Gauge

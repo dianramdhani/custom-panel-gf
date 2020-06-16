@@ -8,16 +8,6 @@ export class ThreePhaseMonitor extends PureComponent<PanelProps> {
   panelWidth: number | undefined;
   scaleFont = 1;
 
-  data = this.props.data;
-  currR = this.data.series.find(_ => _.name === 'currR');
-  currS = this.data.series.find(_ => _.name === 'currS');
-  currT = this.data.series.find(_ => _.name === 'currT');
-  voltR = this.data.series.find(_ => _.name === 'voltR');
-  voltS = this.data.series.find(_ => _.name === 'voltS');
-  voltT = this.data.series.find(_ => _.name === 'voltT');
-  frequency = this.data.series.find(_ => _.name === 'frequency');
-  totActEnergy = this.data.series.find(_ => _.name === 'totActEnergy');
-
   componentDidUpdate() {
     if (this.panelWidth) {
       const maxWidth = 600;
@@ -31,54 +21,64 @@ export class ThreePhaseMonitor extends PureComponent<PanelProps> {
   }
 
   render() {
+    const data = this.props.data,
+      currR = data.series.find(_ => _.name === 'currR'),
+      currS = data.series.find(_ => _.name === 'currS'),
+      currT = data.series.find(_ => _.name === 'currT'),
+      voltR = data.series.find(_ => _.name === 'voltR'),
+      voltS = data.series.find(_ => _.name === 'voltS'),
+      voltT = data.series.find(_ => _.name === 'voltT'),
+      frequency = data.series.find(_ => _.name === 'frequency'),
+      totActEnergy = data.series.find(_ => _.name === 'totActEnergy');
+
     return (
       <div className="w3-display-container tr-full" ref={el => (this.panelWidth = el?.clientWidth)}>
         <div className="w3-display-middle tr-wd-100" style={{ zoom: this.scaleFont }}>
           <div className="w3-center tr-big-value">
-            <h1 style={{ color: this.getColor(this.totActEnergy) }}>
-              {this.getLastValue(this.totActEnergy)?.text}
-              <span>{this.getLastValue(this.totActEnergy)?.suffix}</span>
+            <h1 style={{ color: this.getColor(totActEnergy) }}>
+              {this.getLastValue(totActEnergy)?.text}
+              <span>{this.getLastValue(totActEnergy)?.suffix}</span>
             </h1>
           </div>
           <div className="w3-row tr-big-value tr-middle-value">
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
               <h5>R</h5>
-              <h1 style={{ color: this.getColor(this.currR) }}>
-                {this.getLastValue(this.currR)?.text}
-                <span>{this.getLastValue(this.currR)?.suffix}</span>
+              <h1 style={{ color: this.getColor(currR) }}>
+                {this.getLastValue(currR)?.text}
+                <span>{this.getLastValue(currR)?.suffix}</span>
               </h1>
-              <h3 style={{ color: this.getColor(this.voltR) }}>
-                {this.getLastValue(this.voltR)?.text}
-                <span>{this.getLastValue(this.voltR)?.suffix}</span>
+              <h3 style={{ color: this.getColor(voltR) }}>
+                {this.getLastValue(voltR)?.text}
+                <span>{this.getLastValue(voltR)?.suffix}</span>
               </h3>
             </div>
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
               <h5>S</h5>
-              <h1 style={{ color: this.getColor(this.currS) }}>
-                {this.getLastValue(this.currS)?.text}
-                <span>{this.getLastValue(this.currS)?.suffix}</span>
+              <h1 style={{ color: this.getColor(currS) }}>
+                {this.getLastValue(currS)?.text}
+                <span>{this.getLastValue(currS)?.suffix}</span>
               </h1>
-              <h3 style={{ color: this.getColor(this.voltS) }}>
-                {this.getLastValue(this.voltS)?.text}
-                <span>{this.getLastValue(this.voltS)?.suffix}</span>
+              <h3 style={{ color: this.getColor(voltS) }}>
+                {this.getLastValue(voltS)?.text}
+                <span>{this.getLastValue(voltS)?.suffix}</span>
               </h3>
             </div>
             <div className="w3-col w3-center" style={{ width: '33.3%' }}>
               <h5>T</h5>
-              <h1 style={{ color: this.getColor(this.currT) }}>
-                {this.getLastValue(this.currT)?.text}
-                <span>{this.getLastValue(this.currT)?.suffix}</span>
+              <h1 style={{ color: this.getColor(currT) }}>
+                {this.getLastValue(currT)?.text}
+                <span>{this.getLastValue(currT)?.suffix}</span>
               </h1>
-              <h3 style={{ color: this.getColor(this.voltT) }}>
-                {this.getLastValue(this.voltT)?.text}
-                <span>{this.getLastValue(this.voltT)?.suffix}</span>
+              <h3 style={{ color: this.getColor(voltT) }}>
+                {this.getLastValue(voltT)?.text}
+                <span>{this.getLastValue(voltT)?.suffix}</span>
               </h3>
             </div>
           </div>
           <div className="w3-center tr-middle-value">
-            <h3 style={{ color: this.getColor(this.frequency) }}>
-              {this.getLastValue(this.frequency)?.text}
-              <span>{this.getLastValue(this.frequency)?.suffix}</span>
+            <h3 style={{ color: this.getColor(frequency) }}>
+              {this.getLastValue(frequency)?.text}
+              <span>{this.getLastValue(frequency)?.suffix}</span>
             </h3>
           </div>
         </div>

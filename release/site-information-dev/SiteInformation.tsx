@@ -45,7 +45,8 @@ export class SiteInformation extends PureComponent<PanelProps> {
     if (this.panelWidth) {
       const maxWidth = 600;
       if (this.panelWidth < maxWidth) {
-        this.scaleFont = this.panelWidth / (maxWidth + 100);
+        this.scaleFont = this.panelWidth / maxWidth;
+        this.scaleFont = this.scaleFont < 0.7 ? 0.7 : this.scaleFont;
       } else {
         this.scaleFont = 1;
       }
@@ -57,7 +58,7 @@ export class SiteInformation extends PureComponent<PanelProps> {
 
     return (
       <div className="w3-display-container tr-full" ref={el => (this.panelWidth = el?.clientWidth)}>
-        <div className="w3-display-middle tr-wd-100">
+        <div className="w3-display-middle tr-wd-100" style={{ zoom: this.scaleFont }}>
           <div className="w3-row">
             <div className="w3-half w3-section">
               <table style={{ margin: 'auto' }}>
@@ -67,7 +68,7 @@ export class SiteInformation extends PureComponent<PanelProps> {
                   </td>
                   <td>
                     <div className="w3-margin-bottom">
-                      <h2 style={{ margin: 0, zoom: this.scaleFont }}>{String(this.name).replace('Site', '')}</h2>
+                      <h2 style={{ margin: 0 }}>{String(this.name).replace('Site', '')}</h2>
                       <span className="w3-text-blue-gray">{this.region}</span>
                     </div>
                     <div style={{ display: 'flex', verticalAlign: 'middle' }}>
@@ -96,7 +97,7 @@ export class SiteInformation extends PureComponent<PanelProps> {
                       </div>
                     </td>
                     <td className="tr-big-value">
-                      <h1 style={{ zoom: this.scaleFont }}>
+                      <h1>
                         {openWeatherData?.current.temp}
                         <span>&nbsp;°C</span>
                       </h1>

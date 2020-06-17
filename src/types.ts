@@ -1,7 +1,5 @@
-type SeriesSize = 'sm' | 'md' | 'lg';
+type Alert = 'critical' | 'major' | 'minor';
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
+export interface AlertOptions {
+  alertType: Alert;
 }

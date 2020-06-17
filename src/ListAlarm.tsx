@@ -25,13 +25,13 @@ export class ListAlarm extends PureComponent<PanelProps> {
   render() {
     const { cssHasLoaded } = this.state,
       ref = (el: HTMLDivElement) => {
-        this.contentHeight = el ? el.clientHeight - 35 : 0;
-        this.contentWidth = el ? el.clientWidth - 100 : 0;
+        this.contentHeight = el ? el.clientHeight - 40 : 0;
+        this.contentWidth = el ? el.clientWidth - 130 : 0;
       };
 
     const test = (
-      <li className="w3-bar" style={{ paddingLeft: 0, paddingRight: 0 }}>
-        <div className="w3-bar-item" style={{ width: 70, padding: 0 }}>
+      <li style={{ paddingLeft: 0, paddingRight: 0, display: 'flex' }}>
+        <div style={{ width: 70 }}>
           {cssHasLoaded ? (
             <i
               className="material-icons w3-text-pink"
@@ -41,13 +41,25 @@ export class ListAlarm extends PureComponent<PanelProps> {
             </i>
           ) : null}
         </div>
-        <div className="w3-bar-item" style={{ padding: 0 }}>
+
+        <div>
           <div style={{ width: this.contentWidth, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            <span className="w3-badge w3-tiny w3-pink">10</span> Lorem ipsum, dolor sit amet consectetur adipisicing
-            elit. Quibusdam numquam voluptate, quam velit enim fuga, ipsam ea corporis quasi quae autem voluptates quas
-            labore aut aperiam id accusamus esse doloremque?
+            <span className="w3-badge w3-tiny w3-pink">10</span> Lorem ipsum dolor, sit amet consectetur adipisicing
+            elit. Quis, tempore voluptatum minima omnis aperiam, necessitatibus earum rem dicta enim provident qui sit.
+            Rerum enim alias aut neque quasi, architecto esse.
           </div>
-          <small>Web Designer</small>
+          <small className="w3-text-blue-gray">12 April 2020 17:00</small>
+        </div>
+
+        <div style={{ width: 30 }}>
+          {cssHasLoaded ? (
+            <i
+              className="material-icons w3-text-blue-gray"
+              style={{ position: 'relative', left: '100%', transform: 'translate(-50%, 0)' }}
+            >
+              keyboard_arrow_down
+            </i>
+          ) : null}
         </div>
       </li>
     );
@@ -67,7 +79,6 @@ export class ListAlarm extends PureComponent<PanelProps> {
 
         <div style={{ width: '100%', height: this.contentHeight, overflowY: 'scroll' }}>
           <ul className="w3-ul">
-            {test}
             {test}
             {test}
             {test}

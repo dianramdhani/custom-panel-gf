@@ -13,11 +13,14 @@ export class ListAlarm extends PureComponent<PanelProps<AlertOptions>> {
   contentHeight = 0;
   contentWidth = 0;
 
+  readonly minimumZoom = 0.5;
+
   constructor(props: any) {
     super(props);
     this.state = {
       cssHasLoaded: false,
       collapsedAlerts: [],
+      zoom: 1,
     };
   }
 
@@ -26,11 +29,34 @@ export class ListAlarm extends PureComponent<PanelProps<AlertOptions>> {
   }
 
   render() {
+    // ZOOM
+    let { zoom } = this.state,
+      setZoom = (clientWidth: number) => {
+        const maxWidth = 600,
+          minZoom = 0.5;
+        if (clientWidth < maxWidth) {
+          zoom = clientWidth / maxWidth;
+          zoom = zoom < minZoom ? minZoom : zoom;
+        } else {
+          zoom = 1;
+        }
+        this.setState({ zoom });
+      };
+
     // WIDTH HEIGHT CONTAINER
     const { cssHasLoaded } = this.state,
       ref = (el: HTMLDivElement) => {
-        this.contentHeight = el ? el.clientHeight - 40 : 0;
-        this.contentWidth = el ? el.clientWidth - 130 : 0;
+        if (el) {
+          this.contentHeight = el.clientHeight - 40;
+          this.contentWidth = el.clientWidth - 130;
+          setZoom(el.clientWidth);
+          if (zoom < 1) {
+            const factorHeight = 1 / zoom,
+              factorWidth = 1 / (1 + zoom);
+            this.contentHeight = this.contentHeight * factorHeight + 10 * factorHeight;
+            this.contentWidth = this.contentWidth * factorWidth + 500 * factorWidth;
+          }
+        }
       };
 
     // ALERT TYPE
@@ -54,17 +80,75 @@ export class ListAlarm extends PureComponent<PanelProps<AlertOptions>> {
         break;
     }
 
+    // DATA MODE
+    const { dataMode } = this.props.options;
+    let alerts: Alert[] = [];
+    switch (dataMode) {
+      case 'dummy':
+        alerts = [
+          {
+            description:
+              'Real-time event processing is currently overloaded and may stop processing your events. Please contact support.',
+            time: '18 June 2020 11:01',
+            count: 3,
+          },
+          { description: 'Threshold exceeded', time: '18 June 2020 09:21', count: 0 },
+          {
+            description:
+              'Liveness probe failed: http request canceled while waiting connection. (Client.Timeout exceeded while awaiting headers)',
+            time: '18 June 2020 03:21',
+            count: 2,
+          },
+          {
+            description:
+              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro quae atque corporis, accusamus sequi quod voluptates repellat asperiores quam, perspiciatis non nobis soluta veritatis aperiam, cumque quaerat. Minima, distinctio?',
+            time: '01 January 2020 00:00',
+            count: 0,
+          },
+          {
+            description:
+              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro quae atque corporis, accusamus sequi quod voluptates repellat asperiores quam, perspiciatis non nobis soluta veritatis aperiam, cumque quaerat. Minima, distinctio?',
+            time: '01 January 2020 00:00',
+            count: 0,
+          },
+          {
+            description:
+              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro quae atque corporis, accusamus sequi quod voluptates repellat asperiores quam, perspiciatis non nobis soluta veritatis aperiam, cumque quaerat. Minima, distinctio?',
+            time: '01 January 2020 00:00',
+            count: 0,
+          },
+          {
+            description:
+              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro quae atque corporis, accusamus sequi quod voluptates repellat asperiores quam, perspiciatis non nobis soluta veritatis aperiam, cumque quaerat. Minima, distinctio?',
+            time: '01 January 2020 00:00',
+            count: 0,
+          },
+          {
+            description:
+              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro quae atque corporis, accusamus sequi quod voluptates repellat asperiores quam, perspiciatis non nobis soluta veritatis aperiam, cumque quaerat. Minima, distinctio?',
+            time: '01 January 2020 00:00',
+            count: 0,
+          },
+          {
+            description:
+              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro quae atque corporis, accusamus sequi quod voluptates repellat asperiores quam, perspiciatis non nobis soluta veritatis aperiam, cumque quaerat. Minima, distinctio?',
+            time: '01 January 2020 00:00',
+            count: 0,
+          },
+          {
+            description:
+              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro quae atque corporis, accusamus sequi quod voluptates repellat asperiores quam, perspiciatis non nobis soluta veritatis aperiam, cumque quaerat. Minima, distinctio?',
+            time: '01 January 2020 00:00',
+            count: 0,
+          },
+        ];
+        break;
+      case 'real':
+        break;
+    }
+
     // ALERT COMPONENT
-    const alerts: Alert[] = [
-        {
-          description:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum assumenda nemo facere autem ut, delectus, amet rerum, doloribus est unde placeat alias nobis tenetur! Modi facere asperiores consequatur magnam exercitationem!',
-          time: 'ini time 1',
-          count: 0,
-        },
-        { description: 'ini alert 1', time: 'ini time 1', count: 2 },
-      ],
-      { collapsedAlerts } = this.state;
+    const { collapsedAlerts } = this.state;
     if (collapsedAlerts.length === 0) {
       this.setState({ collapsedAlerts: alerts.map(_ => false) });
     }
@@ -114,22 +198,28 @@ export class ListAlarm extends PureComponent<PanelProps<AlertOptions>> {
       ));
 
     return (
-      <div className="tr-full" ref={ref}>
-        <div className="w3-border-bottom">
-          <div className={`w3-tag ${backgroundColor}`}>
-            {cssHasLoaded ? (
-              <i className="material-icons" style={{ position: 'relative', top: 3 }}>
-                {icon}
-              </i>
-            ) : null}
-            <span style={{ position: 'relative', top: -2, fontSize: 18, textTransform: 'uppercase', marginLeft: 8 }}>
-              {alertType}
-            </span>
+      <div className="tr-full" ref={ref.bind(this)}>
+        <div style={{ zoom }}>
+          <div className="w3-border-bottom">
+            <div className={`w3-tag ${backgroundColor}`}>
+              {cssHasLoaded ? (
+                <i className="material-icons" style={{ position: 'relative', top: 3 }}>
+                  {icon}
+                </i>
+              ) : null}
+              <span style={{ position: 'relative', top: -2, fontSize: 18, textTransform: 'uppercase', marginLeft: 8 }}>
+                {alertType}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div style={{ width: '100%', height: this.contentHeight, overflowY: 'scroll' }}>
-          <ul className="w3-ul">{componentAlerts}</ul>
+          {alerts.length ? (
+            <div style={{ width: '100%', height: this.contentHeight, overflowY: 'scroll' }}>
+              <ul className="w3-ul">{componentAlerts}</ul>
+            </div>
+          ) : (
+            <h3 className="w3-center">No Data</h3>
+          )}
         </div>
       </div>
     );

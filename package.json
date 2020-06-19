@@ -17,12 +17,16 @@
   },
   "devDependencies": {
     "@grafana/data": "7.0.1",
+    "@grafana/runtime": "7.0.1",
     "@grafana/toolkit": "7.0.1",
     "@grafana/ui": "7.0.1",
-    "@grafana/runtime": "7.0.1",
+    "@types/chart.js": "^2.9.22",
     "emotion": "10.0.27"
   },
   "engines": {
     "node": ">=12 <13"
+  },
+  "dependencies": {
+    "chart.js": "^2.9.3"
   }
 }

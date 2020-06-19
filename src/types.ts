@@ -6,4 +6,5 @@ export interface BatteryOptions {
   dummyVoltage: number;
   dummyResistance: number;
   dummyTemperature: number;
+  spacing: number;
 }

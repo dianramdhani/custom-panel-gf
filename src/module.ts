@@ -25,6 +25,11 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
         },
       })
       .addNumberInput({
+        path: 'spacing',
+        defaultValue: 16,
+        name: 'Spacing',
+      })
+      .addNumberInput({
         path: 'dummyCapacity',
         defaultValue: 50,
         name: 'Capacity',

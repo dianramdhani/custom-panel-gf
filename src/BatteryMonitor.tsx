@@ -22,26 +22,30 @@ export class BatteryMonitor extends PureComponent<PanelProps<BatteryOptions>> {
     const batteryClass = css`
         background-color: #fff;
         border: 2px solid #000;
+        border-radius: 5px;
         height: 32px;
         margin-left: auto;
         margin-right: auto;
         position: relative;
-        width: 100px;
+        padding: 2px;
+        width: 70px;
 
         &:after {
           background-color: #fff;
           border: 2px solid #000;
+          border-radius: 0 4px 4px 0;
           content: '';
           display: block;
-          height: 16px;
+          height: 14px;
           position: absolute;
-          right: -6px;
-          top: 6px;
-          width: 6px;
+          right: -7px;
+          top: 7px;
+          width: 7px;
         }
       `,
       levelClass = css`
         background-color: #666;
+        border-radius: 2.5px;
         height: 100%;
       `;
 

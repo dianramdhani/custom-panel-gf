@@ -2,6 +2,8 @@ import { PanelPlugin } from '@grafana/data';
 import { BatteryOptions } from './types';
 import { BatteryMonitor } from './BatteryMonitor';
 
+const isDummy = (currentConfig: BatteryOptions) => currentConfig.dataMode === 'dummy';
+
 export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
   .setPanelOptions(builder =>
     builder
@@ -25,7 +27,26 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
       .addNumberInput({
         path: 'dummyCapacity',
         defaultValue: 50,
-        name: 'Dummy Battery Capacity',
+        name: 'Capacity',
+        showIf: isDummy,
+      })
+      .addNumberInput({
+        path: 'dummyVoltage',
+        defaultValue: 12,
+        name: 'Voltage',
+        showIf: isDummy,
+      })
+      .addNumberInput({
+        path: 'dummyResistance',
+        defaultValue: 5,
+        name: 'Resistance',
+        showIf: isDummy,
+      })
+      .addNumberInput({
+        path: 'dummyTemperature',
+        defaultValue: 30,
+        name: 'Temperature',
+        showIf: isDummy,
       })
   )
   .useFieldConfig();

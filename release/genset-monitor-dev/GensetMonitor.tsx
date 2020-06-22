@@ -2,159 +2,165 @@ import '../styles/w3.css';
 import '../styles/style.scss';
 
 import React, { PureComponent } from 'react';
-import { PanelProps, Field, getValueFormat, DataFrame } from '@grafana/data';
-import { Gauge } from '@grafana/ui';
+import { PanelProps, Field } from '@grafana/data';
 import { config } from '@grafana/runtime';
+import { Gauge } from '@grafana/ui';
+import { css } from 'emotion';
 
-export class GensetMonitor extends PureComponent<PanelProps> {
-  panelWidth: number | undefined;
-  scaleFont = 1;
+import { GensetOptions } from 'types';
+import { Data, getColor, lastValueToData } from './helper';
 
-  componentDidUpdate() {
-    if (this.panelWidth) {
-      const maxWidth = 600;
-      if (this.panelWidth < maxWidth) {
-        this.scaleFont = this.panelWidth / maxWidth;
-        this.scaleFont = this.scaleFont < 0.7 ? 0.7 : this.scaleFont;
-      } else {
-        this.scaleFont = 1;
-      }
-    }
+interface Props extends PanelProps<GensetOptions> {}
+
+export class GensetMonitor extends PureComponent<Props> {
+  readonly state: { zoom: number };
+  fuelCapacity: Data;
+  runningTime: Data;
+  voltage: Data;
+  current: Data;
+  frequency: Data;
+
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      zoom: 1,
+    };
+
+    this.fuelCapacity = this.runningTime = this.voltage = this.current = this.frequency = {
+      number: 0,
+      unit: '',
+      color: 'green',
+    };
   }
 
   render() {
-    const data = this.props.data,
-      litre = data.series.find(_ => _.name === 'litre'),
-      second = data.series.find(_ => _.name === 'second'),
-      voltage = data.series.find(_ => _.name === 'voltage'),
-      frequency = data.series.find(_ => _.name === 'frequency'),
-      current = data.series.find(_ => _.name === 'current');
+    const { zoom } = this.state,
+      { dataMode } = this.props.options,
+      spacingVertical = this.props.options.spacingVertical || 0,
+      spacingHorizontal = this.props.options.spacingHorizontal || 0,
+      container = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      `,
+      setSpacingHorizontal = css`
+        margin: 0 ${spacingHorizontal}px !important;
+      `;
 
-    const numeric = litre?.fields[1].values.get(0),
-      text = `${this.getLastValue(litre)?.text}${this.getLastValue(litre)?.suffix}`,
-      title = '';
-
-    const field: Partial<Field> = {
+    let field: Partial<Field> = {
       config: {
-        min: litre?.fields[1].config.min || 0,
-        max: litre?.fields[1].config.max || 100,
-        thresholds: litre?.fields[1].config.thresholds,
+        min: this.props.fieldConfig.defaults.min || 0,
+        max: this.props.fieldConfig.defaults.max || 100,
+        thresholds: this.props.fieldConfig.defaults.thresholds,
       },
     };
 
+    switch (dataMode) {
+      case 'dummy':
+        const { dummyCurrent, dummyFrequency, dummyFuelCapacity, dummyRunningTime, dummyVoltage } = this.props.options;
+        const setValue = (number: number, unit: string): Data => ({
+          number,
+          unit,
+          color: getColor(number, this.props.fieldConfig.defaults.thresholds?.steps),
+        });
+        this.current = setValue(dummyCurrent, ' A');
+        this.frequency = setValue(dummyFrequency, ' Hz');
+        this.fuelCapacity = setValue(dummyFuelCapacity, ' L');
+        this.runningTime = setValue(dummyRunningTime, ' hour');
+        this.voltage = setValue(dummyVoltage, ' V');
+        break;
+      case 'real':
+        const data = this.props.data,
+          litre = data.series.find(_ => _.name === 'litre'),
+          second = data.series.find(_ => _.name === 'second'),
+          voltage = data.series.find(_ => _.name === 'voltage'),
+          frequency = data.series.find(_ => _.name === 'frequency'),
+          current = data.series.find(_ => _.name === 'current');
+
+        this.fuelCapacity = lastValueToData(litre);
+        this.runningTime = lastValueToData(second);
+        this.voltage = lastValueToData(voltage);
+        this.frequency = lastValueToData(frequency);
+        this.current = lastValueToData(current);
+        break;
+    }
+
+    const gauge = this.fuelCapacity.number ? (
+      <div className={setSpacingHorizontal} style={{ display: 'inline', width: 150, height: 150 }}>
+        <Gauge
+          value={{
+            numeric: this.fuelCapacity.number,
+            text: `${this.fuelCapacity.number}${this.fuelCapacity.unit}`,
+            title: '',
+          }}
+          width={150}
+          height={150}
+          field={field.config}
+          theme={config.theme}
+        />
+      </div>
+    ) : (
+      <div className={`${setSpacingHorizontal}`}>
+        <h1 style={{ color: this.fuelCapacity.color }}>No Data</h1>
+      </div>
+    );
+
     return (
-      <div className="w3-display-container tr-full" ref={el => (this.panelWidth = el?.clientWidth)}>
-        <div className="w3-display-middle tr-wd-100" style={{ zoom: this.scaleFont }}>
-          <div className="w3-row">
-            <div className="w3-col" style={{ width: '50%' }}>
-              <Gauge
-                value={{ numeric, text, title }}
-                width={150}
-                height={150}
-                field={field.config}
-                theme={config.theme}
-              />
-            </div>
-            <div className="w3-col w3-container tr-genset-time" style={{ width: '50%' }}>
+      <div className="w3-display-container tr-full" ref={this.setZoom.bind(this)}>
+        <div className="w3-display-middle tr-wd-100" style={{ zoom }}>
+          <div className={container}>
+            {gauge}
+            <div
+              className={`${css`
+                text-align: right !important;
+                @media (min-width: 480px) {
+                  text-align: center !important;
+                }
+              `} ${setSpacingHorizontal}`}
+            >
               <h5>Running Time</h5>
               <div className="tr-big-value">
-                <h1 style={{ color: this.getColor(second) }}>
-                  {this.getLastValue(second)?.text}
-                  <span className="w3-xxlarge">{this.getLastValue(second)?.suffix}</span>
+                <h1 style={{ color: this.runningTime.color }}>
+                  {this.runningTime.number}
+                  <span>{this.runningTime.unit}</span>
                 </h1>
               </div>
             </div>
           </div>
-          <div className="w3-row tr-middle-value">
-            <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(voltage) }}>
-                {this.getLastValue(voltage)?.text}
-                <span>{this.getLastValue(voltage)?.suffix}</span>
-              </h3>
-            </div>
-            <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(current) }}>
-                {this.getLastValue(current)?.text}
-                <span>{this.getLastValue(current)?.suffix}</span>
-              </h3>
-            </div>
-            <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-              <h3 style={{ color: this.getColor(frequency) }}>
-                {this.getLastValue(frequency)?.text}
-                <span>{this.getLastValue(frequency)?.suffix}</span>
-              </h3>
-            </div>
+
+          <div className={`${container} tr-middle-value`} style={{ paddingTop: spacingVertical }}>
+            <h3 className={setSpacingHorizontal} style={{ color: this.voltage.color }}>
+              {this.voltage.number}
+              <span>{this.voltage.unit}</span>
+            </h3>
+            <h3 className={setSpacingHorizontal} style={{ color: this.current.color }}>
+              {this.current.number}
+              <span>{this.current.unit}</span>
+            </h3>
+            <h3 className={setSpacingHorizontal} style={{ color: this.frequency.color }}>
+              {this.frequency.number}
+              <span>{this.frequency.unit}</span>
+            </h3>
           </div>
         </div>
       </div>
     );
   }
 
-  private getLastValue(data: DataFrame | undefined) {
-    if (data) {
-      const unit = data.fields[1].config.unit,
-        value = data.fields[1].values.get(0);
-      return getValueFormat(unit)(value);
-    } else {
-      return;
-    }
-  }
+  private setZoom(element: HTMLDivElement) {
+    const maxWidthPanel = 600,
+      minZoom = 0.5;
 
-  private getColor(data: DataFrame | undefined) {
-    if (data) {
-      const value = data.fields[1].values.get(0),
-        steps = data.fields[1].config.thresholds?.steps || [];
-
-      if (steps.length) {
-        const colorPalette: { [index: string]: any } = {
-          green: '#73BF69',
-          'dark-green': '#37872D',
-          'semi-dark-green': '#56A64B',
-          'light-green': '#96D98D',
-          'super-light-green': '#C8F2C2',
-
-          yellow: '#FADE2A',
-          'dark-yellow': '#E0B400',
-          'semi-dark-yellow': '#F2CC0C',
-          'light-yellow': '#FFEE52',
-          'super-light-yellow': '#FFF899',
-
-          red: '#F2495C',
-          'dark-red': '#C4162A',
-          'semi-dark-red': '#E02F44',
-          'light-red': '#FF7383',
-          'super-light-red': '#FFA6B0',
-
-          blue: '#5794F2',
-          'dark-blue': '#1F60C4',
-          'semi-dark-blue': '#3274D9',
-          'light-blue': '#8AB8FF',
-          'super-light-blue': '#C0D8FF',
-
-          orange: '#FF9830',
-          'dark-orange': '#FA6400',
-          'semi-dark-orange': '#FF780A',
-          'light-orange': '#FFB357',
-          'super-light-orange': '#FFCB7D',
-
-          purple: '#B877D9',
-          'dark-purple': '#8F3BB8',
-          'semi-dark-purple': '#A352CC',
-          'light-purple': '#CA95E5',
-          'super-light-purple': '#DEB6F2',
-        };
-
-        let indexStep = steps.findIndex(step => step.value > value) - 1;
-        indexStep = indexStep === -2 ? steps.length - 1 : indexStep;
-
-        const color = colorPalette[steps[indexStep].color] || steps[indexStep].color;
-
-        return color;
+    if (element) {
+      const { clientWidth } = element;
+      if (clientWidth < maxWidthPanel) {
+        let zoom = clientWidth / maxWidthPanel;
+        zoom = zoom < minZoom ? minZoom : zoom;
+        this.setState({ zoom });
       } else {
-        return;
+        this.setState({ zoom: 1 });
       }
-    } else {
-      return;
     }
   }
 }

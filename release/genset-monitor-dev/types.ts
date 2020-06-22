@@ -1,7 +1,12 @@
-type SeriesSize = 'sm' | 'md' | 'lg';
+type DataMode = 'real' | 'dummy';
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
+export interface GensetOptions {
+  spacingVertical: number;
+  spacingHorizontal: number;
+  dataMode: DataMode;
+  dummyFuelCapacity: number;
+  dummyRunningTime: number;
+  dummyVoltage: number;
+  dummyCurrent: number;
+  dummyFrequency: number;
 }

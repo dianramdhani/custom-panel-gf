@@ -7,6 +7,11 @@ const isDummy = (currentConfig: BatteryOptions) => currentConfig.dataMode === 'd
 export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
   .setPanelOptions(builder =>
     builder
+      .addNumberInput({
+        path: 'spacing',
+        defaultValue: 16,
+        name: 'Spacing',
+      })
       .addRadio({
         path: 'dataMode',
         defaultValue: 'dummy',
@@ -23,11 +28,6 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
             },
           ],
         },
-      })
-      .addNumberInput({
-        path: 'spacing',
-        defaultValue: 16,
-        name: 'Spacing',
       })
       .addNumberInput({
         path: 'dummyCapacity',

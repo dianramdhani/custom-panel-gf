@@ -59,9 +59,9 @@ export class BatteryMonitor extends PureComponent<Props> {
           color: getColor(number, this.props.fieldConfig.defaults.thresholds?.steps),
         });
         this.capacity = setValue(dummyCapacity, ' %');
-        this.resistance = setValue(dummyResistance, ' Ohm');
+        this.resistance = setValue(dummyResistance, ' Ω');
         this.voltage = setValue(dummyVoltage, ' V');
-        this.temperature = setValue(dummyTemperature, ' C');
+        this.temperature = setValue(dummyTemperature, ' °C');
         break;
       case 'real':
         const data = this.props.data,

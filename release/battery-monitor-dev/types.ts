@@ -1,7 +1,11 @@
-type SeriesSize = 'sm' | 'md' | 'lg';
+type DataMode = 'real' | 'dummy';
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
+export interface BatteryOptions {
+  dataMode: DataMode;
+  dummyCapacity: number;
+  dummyVoltage: number;
+  dummyResistance: number;
+  dummyTemperature: number;
+  spacingVertical: number;
+  spacingHorizontal: number;
 }

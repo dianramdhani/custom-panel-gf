@@ -48,7 +48,9 @@ export class BatteryMonitor extends PureComponent<Props> {
 
   private templates(mode: 'horizontal' | 'vertical'): JSX.Element {
     const { zoom } = this.state;
-    const { dataMode, spacing } = this.props.options;
+    const { dataMode } = this.props.options,
+      spacingVertical = this.props.options.spacingVertical || 0,
+      spacingHorizontal = this.props.options.spacingHorizontal || 0;
 
     switch (dataMode) {
       case 'dummy':
@@ -116,7 +118,7 @@ export class BatteryMonitor extends PureComponent<Props> {
             align-items: center;
           `,
           smallValue = css`
-            margin: 0 ${spacing}px !important;
+            margin: 0 ${spacingHorizontal}px !important;
           `;
 
         return (
@@ -140,7 +142,7 @@ export class BatteryMonitor extends PureComponent<Props> {
                   <span>{this.capacity.unit}</span>
                 </h1>
               </div>
-              <div className={`${container} tr-middle-value`} style={{ paddingTop: spacing }}>
+              <div className={`${container} tr-middle-value`} style={{ paddingTop: spacingVertical }}>
                 <h3 className={smallValue} style={{ color: this.voltage.color }}>
                   {this.voltage.number}
                   <span>{this.voltage.unit}</span>

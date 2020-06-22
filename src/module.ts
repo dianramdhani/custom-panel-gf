@@ -8,9 +8,14 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
   .setPanelOptions(builder =>
     builder
       .addNumberInput({
-        path: 'spacing',
+        path: 'spacingVertical',
         defaultValue: 16,
-        name: 'Spacing',
+        name: 'Spacing Vertical',
+      })
+      .addNumberInput({
+        path: 'spacingHorizontal',
+        defaultValue: 16,
+        name: 'Spacing Horizontal',
       })
       .addRadio({
         path: 'dataMode',

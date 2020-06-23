@@ -1,7 +1,12 @@
-type SeriesSize = 'sm' | 'md' | 'lg';
+type DataMode = 'real' | 'dummy';
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
+export interface DCRectifierOptions {
+  spacingVertical: number;
+  spacingHorizontal: number;
+  bigValuePercentage: number;
+  dataMode: DataMode;
+  dummyCurrent: number;
+  dummyVoltageAC: number;
+  dummyVoltageDC: number;
+  smallValueColor: string;
 }

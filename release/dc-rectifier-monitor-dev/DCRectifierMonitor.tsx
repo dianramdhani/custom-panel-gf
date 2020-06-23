@@ -1,109 +1,114 @@
 import '../styles/w3.css';
 import '../styles/style.scss';
 
-import React from 'react';
-import { PanelProps, DataFrame, getValueFormat } from '@grafana/data';
+import React, { PureComponent } from 'react';
+import { PanelProps } from '@grafana/data';
 
-export const DCRectifierMonitor: React.FC<PanelProps> = props => {
-  const data = props.data,
-    current = data.series.find(_ => _.name === 'current'),
-    volt = data.series.find(_ => _.name === 'volt');
+import { DCRectifierOptions } from 'types';
+import { Data, getColor, lastValueToData } from 'helper';
+import { css } from 'emotion';
 
-  const getLastValue = (data: DataFrame | undefined) => {
-      if (data) {
-        const unit = data.fields[1].config.unit,
-          value = data.fields[1].values.get(0);
-        return getValueFormat(unit)(value);
-      } else {
-        return;
-      }
-    },
-    getColor = (data: DataFrame | undefined) => {
-      if (data) {
-        const value = data.fields[1].values.get(0),
-          steps = data.fields[1].config.thresholds?.steps || [];
+interface Props extends PanelProps<DCRectifierOptions> {}
 
-        if (steps.length) {
-          const colorPalette: { [index: string]: any } = {
-            green: '#73BF69',
-            'dark-green': '#37872D',
-            'semi-dark-green': '#56A64B',
-            'light-green': '#96D98D',
-            'super-light-green': '#C8F2C2',
+export class DCRectifierMonitor extends PureComponent<Props> {
+  readonly state: { zoom: number };
+  current: Data;
+  voltageAC: Data;
+  voltageDC: Data;
 
-            yellow: '#FADE2A',
-            'dark-yellow': '#E0B400',
-            'semi-dark-yellow': '#F2CC0C',
-            'light-yellow': '#FFEE52',
-            'super-light-yellow': '#FFF899',
+  constructor(props: Props) {
+    super(props);
 
-            red: '#F2495C',
-            'dark-red': '#C4162A',
-            'semi-dark-red': '#E02F44',
-            'light-red': '#FF7383',
-            'super-light-red': '#FFA6B0',
-
-            blue: '#5794F2',
-            'dark-blue': '#1F60C4',
-            'semi-dark-blue': '#3274D9',
-            'light-blue': '#8AB8FF',
-            'super-light-blue': '#C0D8FF',
-
-            orange: '#FF9830',
-            'dark-orange': '#FA6400',
-            'semi-dark-orange': '#FF780A',
-            'light-orange': '#FFB357',
-            'super-light-orange': '#FFCB7D',
-
-            purple: '#B877D9',
-            'dark-purple': '#8F3BB8',
-            'semi-dark-purple': '#A352CC',
-            'light-purple': '#CA95E5',
-            'super-light-purple': '#DEB6F2',
-          };
-
-          let indexStep = steps.findIndex(step => step.value > value) - 1;
-          indexStep = indexStep === -2 ? steps.length - 1 : indexStep;
-
-          const color = colorPalette[steps[indexStep].color] || steps[indexStep].color;
-
-          return color;
-        } else {
-          return;
-        }
-      } else {
-        return;
-      }
+    this.state = {
+      zoom: 1,
     };
 
-  return (
-    <div className="w3-display-container tr-full">
-      <div className="w3-display-middle tr-wd-100">
-        <div className="w3-center tr-big-value">
-          <h1 style={{ color: getColor(current) }}>
-            {getLastValue(current)?.text}
-            <span>{getLastValue(current)?.suffix}</span>
-          </h1>
-        </div>
-        <div className="w3-row tr-middle-value">
-          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-            <h3>
-              220<span> VAC</span>
-            </h3>
+    this.current = this.voltageAC = this.voltageDC = {
+      number: 0,
+      unit: '',
+      color: 'green',
+    };
+  }
+
+  render() {
+    const { dataMode } = this.props.options;
+    switch (dataMode) {
+      case 'dummy':
+        const { dummyCurrent, dummyVoltageAC, dummyVoltageDC, smallValueColor } = this.props.options,
+          setValue = (number: number, unit: string): Data => ({
+            number,
+            unit,
+            color: smallValueColor,
+          });
+        this.current = {
+          number: dummyCurrent,
+          unit: ' A',
+          color: getColor(dummyCurrent, this.props.fieldConfig.defaults.thresholds?.steps),
+        };
+        this.voltageAC = setValue(dummyVoltageAC, ' VAC');
+        this.voltageDC = setValue(dummyVoltageDC, ' VDC');
+        break;
+
+      case 'real':
+        const data = this.props.data,
+          current = data.series.find(_ => _.name === 'current'),
+          volt = data.series.find(_ => _.name === 'volt');
+        this.current = lastValueToData(current);
+        this.voltageDC = lastValueToData(volt);
+        break;
+    }
+
+    const { zoom } = this.state,
+      spacingVertical = this.props.options.spacingVertical || 0,
+      spacingHorizontal = this.props.options.spacingHorizontal || 0,
+      bigValuePercentage = this.props.options.bigValuePercentage || 100,
+      container = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: ${spacingVertical}px 0 !important;
+      `,
+      setSpacingHorizontal = css`
+        display: block-inline;
+        padding: 0 ${spacingHorizontal}px !important;
+      `;
+    return (
+      <div className="w3-display-container tr-full" ref={this.setZoom.bind(this)}>
+        <div className="w3-display-middle tr-wd-100" style={{ zoom }}>
+          <div className={`${container} tr-big-value`}>
+            <h1 style={{ color: this.current.color, zoom: `${bigValuePercentage}%` }}>
+              {this.current.number}
+              <span>{this.current.unit}</span>
+            </h1>
           </div>
-          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-            <h3 style={{ color: getColor(volt) }}>
-              {getLastValue(volt)?.text}
-              <span>{getLastValue(volt)?.suffix}</span>
+          <div className={`${container} tr-middle-value`}>
+            <h3 className={setSpacingHorizontal} style={{ color: this.voltageAC.color }}>
+              {this.voltageAC.number}
+              <span>{this.voltageAC.unit}</span>
             </h3>
-          </div>
-          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
-            <h3>
-              30<span> °C</span>
+            <h3 className={setSpacingHorizontal} style={{ color: this.voltageDC.color }}>
+              {this.voltageDC.number}
+              <span>{this.voltageDC.unit}</span>
             </h3>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+
+  private setZoom(element: HTMLDivElement) {
+    const maxWidthPanel = 600,
+      minZoom = 0.5;
+
+    if (element) {
+      const { clientWidth } = element;
+      if (clientWidth < maxWidthPanel) {
+        let zoom = clientWidth / maxWidthPanel;
+        zoom = zoom < minZoom ? minZoom : zoom;
+        this.setState({ zoom });
+      } else {
+        this.setState({ zoom: 1 });
+      }
+    }
+  }
+}

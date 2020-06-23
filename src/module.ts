@@ -15,6 +15,7 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
           options: [
             { label: 'Layout 1', value: 'layout1' },
             { label: 'Layout 2', value: 'layout2' },
+            { label: 'Layout 3', value: 'layout3' },
           ],
         },
       })

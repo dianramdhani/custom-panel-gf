@@ -1,5 +1,5 @@
 type DataMode = 'real' | 'dummy';
-export type Style = 'layout1' | 'layout2';
+export type Style = 'layout1' | 'layout2' | 'layout3';
 
 export interface BatteryOptions {
   style: Style;

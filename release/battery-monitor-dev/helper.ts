@@ -6,15 +6,19 @@ export interface Data {
   color: string;
 }
 
-export function lastValueToData(data: DataFrame): Data {
-  const unit = data.fields[1].config.unit,
-    number = data.fields[1].values.get(0),
-    valueFormat = getValueFormat(unit)(number);
-  return {
-    number,
-    unit: valueFormat.suffix || '',
-    color: getColor(number, data.fields[1].config.thresholds?.steps),
-  };
+export function lastValueToData(data: DataFrame | undefined): Data {
+  if (data) {
+    const unit = data.fields[1].config.unit,
+      number = data.fields[1].values.get(0),
+      valueFormat = getValueFormat(unit)(number);
+    return {
+      number,
+      unit: valueFormat.suffix || '',
+      color: getColor(number, data.fields[1].config.thresholds?.steps),
+    };
+  } else {
+    return { number: null, unit: 'No Data', color: 'gray' };
+  }
 }
 
 export function getColor(number: number, steps: Threshold[] | undefined): string {

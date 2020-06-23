@@ -1,0 +1,36 @@
+{
+  "type": "panel",
+  "name": "Single Phase Monitor",
+  "id": "tritronik-single-phase-monitor",
+  "info": {
+    "description": "Single Phase Monitor",
+    "author": {
+      "name": "Dian Ramdhani Lubis",
+      "url": "www.tritronik.com"
+    },
+    "keywords": [
+      "monitor"
+    ],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/grafana/simple-react-panel"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/grafana/simple-react-panel/blob/master/LICENSE"
+      }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaVersion": "6.3.x",
+    "plugins": []
+  }
+}

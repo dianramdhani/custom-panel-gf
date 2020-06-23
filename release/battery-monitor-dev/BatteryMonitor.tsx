@@ -1,131 +1,417 @@
 import '../styles/w3.css';
 import '../styles/style.scss';
 
-import React from 'react';
-import { PanelProps, VizOrientation, DataFrame, getValueFormat } from '@grafana/data';
-import { BarGauge, BarGaugeDisplayMode, HorizontalGroup } from '@grafana/ui';
-import { config } from '@grafana/runtime';
+import React, { PureComponent } from 'react';
+import { PanelProps } from '@grafana/data';
+import { css } from 'emotion';
 
-export const BatteryMonitor: React.FC<PanelProps> = props => {
-  const data = props.data,
-    cell1 = data.series.find(_ => _.name === 'cell1'),
-    temp1 = data.series.find(_ => _.name === 'temp1'),
-    rest1 = data.series.find(_ => _.name === 'rest1'),
-    soc1 = data.series.find(_ => _.name === 'soc1');
+import { BatteryOptions, Style } from './types';
+import { Data, lastValueToData, getColor } from './helper';
 
-  const getLastValue = (data: DataFrame | undefined) => {
-      if (data) {
-        const unit = data.fields[1].config.unit,
-          value = data.fields[1].values.get(0);
-        return getValueFormat(unit)(value);
-      } else {
-        return;
-      }
-    },
-    getColor = (data: DataFrame | undefined) => {
-      if (data) {
-        const value = data.fields[1].values.get(0),
-          steps = data.fields[1].config.thresholds?.steps || [];
+interface Props extends PanelProps<BatteryOptions> {}
 
-        if (steps.length) {
-          const colorPalette: { [index: string]: any } = {
-            green: '#73BF69',
-            'dark-green': '#37872D',
-            'semi-dark-green': '#56A64B',
-            'light-green': '#96D98D',
-            'super-light-green': '#C8F2C2',
+export class BatteryMonitor extends PureComponent<Props> {
+  readonly state: { zoom: number };
+  capacity: Data;
+  voltage: Data;
+  resistance: Data;
+  temperature: Data;
+  current: Data;
 
-            yellow: '#FADE2A',
-            'dark-yellow': '#E0B400',
-            'semi-dark-yellow': '#F2CC0C',
-            'light-yellow': '#FFEE52',
-            'super-light-yellow': '#FFF899',
+  constructor(props: Props) {
+    super(props);
 
-            red: '#F2495C',
-            'dark-red': '#C4162A',
-            'semi-dark-red': '#E02F44',
-            'light-red': '#FF7383',
-            'super-light-red': '#FFA6B0',
-
-            blue: '#5794F2',
-            'dark-blue': '#1F60C4',
-            'semi-dark-blue': '#3274D9',
-            'light-blue': '#8AB8FF',
-            'super-light-blue': '#C0D8FF',
-
-            orange: '#FF9830',
-            'dark-orange': '#FA6400',
-            'semi-dark-orange': '#FF780A',
-            'light-orange': '#FFB357',
-            'super-light-orange': '#FFCB7D',
-
-            purple: '#B877D9',
-            'dark-purple': '#8F3BB8',
-            'semi-dark-purple': '#A352CC',
-            'light-purple': '#CA95E5',
-            'super-light-purple': '#DEB6F2',
-          };
-
-          let indexStep = steps.findIndex(step => step.value > value) - 1;
-          indexStep = indexStep === -2 ? steps.length - 1 : indexStep;
-
-          const color = colorPalette[steps[indexStep].color] || steps[indexStep].color;
-
-          return color;
-        } else {
-          return;
-        }
-      } else {
-        return;
-      }
+    this.state = {
+      zoom: 1,
     };
 
-  return (
-    <div className="w3-display-container" style={{ width: '100%', height: '100%' }}>
-      <div className="w3-display-middle" style={{ width: '100%' }}>
-        <HorizontalGroup justify="center">
-          <div className="w3-margin-right tr-big-value">
-            <h1 style={{ color: getColor(soc1) }}>
-              {getLastValue(soc1)?.text}
-              <span className="w3-xxlarge">{getLastValue(soc1)?.suffix}</span>
-            </h1>
-          </div>
-          <BarGauge
-            orientation={VizOrientation.Horizontal}
-            displayMode={BarGaugeDisplayMode.Lcd}
-            height={50}
-            width={200}
-            theme={config.theme}
-            value={{
-              text: '',
-              title: '',
-              numeric: soc1?.fields[1].values.get(0),
-            }}
-            field={soc1?.fields[1].config}
-            display={soc1?.fields[1].display}
-          ></BarGauge>
-        </HorizontalGroup>
-        <div className="w3-row tr-middle-value">
-          <div className="w3-third w3-center">
-            <h3 style={{ color: getColor(cell1) }}>
-              {getLastValue(cell1)?.text}
-              <span>{getLastValue(cell1)?.suffix}</span>
-            </h3>
-          </div>
-          <div className="w3-third w3-center">
-            <h3 style={{ color: getColor(rest1) }}>
-              {getLastValue(rest1)?.text}
-              <span>{getLastValue(rest1)?.suffix}</span>
-            </h3>
-          </div>
-          <div className="w3-third w3-center">
-            <h3 style={{ color: getColor(temp1) }}>
-              {getLastValue(temp1)?.text}
-              <span>{getLastValue(temp1)?.suffix}</span>
-            </h3>
-          </div>
+    this.capacity = this.voltage = this.resistance = this.temperature = this.current = {
+      number: 0,
+      unit: '',
+      color: 'green',
+    };
+  }
+
+  render() {
+    const { dataMode, style } = this.props.options;
+
+    switch (dataMode) {
+      case 'dummy':
+        const {
+          dummyCapacity,
+          dummyTemperature,
+          dummyResistance,
+          dummyVoltage,
+          dummyCurrent,
+          smallValueColor,
+        } = this.props.options;
+        const setValue = (number: number, unit: string): Data => ({
+          number,
+          unit,
+          color: smallValueColor,
+        });
+        this.capacity = {
+          number: dummyCapacity,
+          unit: ' %',
+          color: getColor(dummyCapacity, this.props.fieldConfig.defaults.thresholds?.steps),
+        };
+        this.resistance = setValue(dummyResistance, ' Ω');
+        this.voltage = setValue(dummyVoltage, ' V');
+        this.temperature = setValue(dummyTemperature, ' °C');
+        this.current = setValue(dummyCurrent, ' A');
+        break;
+      case 'real':
+        const data = this.props.data,
+          cell1 = data.series.find(_ => _.name === 'cell1'),
+          temp1 = data.series.find(_ => _.name === 'temp1'),
+          rest1 = data.series.find(_ => _.name === 'rest1'),
+          soc1 = data.series.find(_ => _.name === 'soc1');
+
+        this.voltage = lastValueToData(cell1);
+        this.temperature = lastValueToData(temp1);
+        this.resistance = lastValueToData(rest1);
+        this.capacity = lastValueToData(soc1);
+        break;
+    }
+
+    return this.layoutSelector(style);
+  }
+
+  private setZoom(element: HTMLDivElement) {
+    const maxWidthPanel = 600,
+      minZoom = 0.5;
+
+    if (element) {
+      const { clientWidth } = element;
+      if (clientWidth < maxWidthPanel) {
+        let zoom = clientWidth / maxWidthPanel;
+        zoom = zoom < minZoom ? minZoom : zoom;
+        this.setState({ zoom });
+      } else {
+        this.setState({ zoom: 1 });
+      }
+    }
+  }
+
+  private layoutSelector(style: Style): JSX.Element {
+    // reference: https://benohead.com/blog/2014/10/04/html5-displaying-battery-level/
+    const { zoom } = this.state,
+      spacingVertical = this.props.options.spacingVertical || 0,
+      spacingHorizontal = this.props.options.spacingHorizontal || 0,
+      { showCurrent, bigValuePercentage } = this.props.options,
+      color = this.capacity.color,
+      container = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      `;
+
+    let battery: string,
+      level: string,
+      smallValue: string,
+      getSmallValueElement: Function,
+      element: JSX.Element = <h1 className="w3-center w3-text-blue-gray">No Data</h1>;
+
+    switch (style) {
+      case 'layout1':
+        battery = css`
+          border: 2px solid ${color};
+          border-radius: 5px;
+          display: inline-block;
+          height: 32px;
+          position: relative;
+          padding: 2px;
+          margin-right: 10px;
+          width: 70px;
+          zoom: 2;
+
+          &::after {
+            border-radius: 0 4px 4px 0;
+            border: 2px solid ${color};
+            background-color: ${color};
+            content: '';
+            display: block;
+            height: 14px;
+            position: absolute;
+            right: -7px;
+            top: 7px;
+            width: 6px;
+          }
+        `;
+        level = css`
+          background-color: ${color};
+          border-radius: 2.5px;
+          height: 100%;
+        `;
+        smallValue = css`
+          margin: 0 ${spacingHorizontal}px !important;
+        `;
+        getSmallValueElement = (data: Data) => (
+          <h3 className={smallValue} style={{ color: data.color }}>
+            {data.number}
+            <span>{data.unit}</span>
+          </h3>
+        );
+        element = (
+          <>
+            <div className={`${container} tr-big-value`} style={{ zoom: `${bigValuePercentage}%` }}>
+              <div className={battery}>
+                {this.capacity.number !== null ? (
+                  <div
+                    className={level}
+                    style={{
+                      width: `${this.capacity.number > 100 ? 100 : this.capacity.number}%`,
+                    }}
+                  ></div>
+                ) : (
+                  undefined
+                )}
+              </div>
+              <h1 style={{ color: this.capacity.color }}>
+                {this.capacity.number}
+                <span>{this.capacity.unit}</span>
+              </h1>
+            </div>
+            <div className={`${container} tr-middle-value`} style={{ paddingTop: spacingVertical }}>
+              {getSmallValueElement(this.voltage)}
+              {showCurrent ? getSmallValueElement(this.current) : undefined}
+              {getSmallValueElement(this.resistance)}
+              {getSmallValueElement(this.temperature)}
+            </div>
+          </>
+        );
+        break;
+
+      case 'layout2':
+        battery = css`
+          border: 2px solid ${color};
+          border-radius: 5px;
+          display: inline-block;
+          height: 60px;
+          position: relative;
+          padding: 2px;
+          margin-right: 10px;
+          transform: rotate(180deg);
+          width: 32px;
+          zoom: 2;
+
+          &::after {
+            border-radius: 0 0 4px 4px;
+            border: 2px solid ${color};
+            background-color: ${color};
+            content: '';
+            display: block;
+            height: 6px;
+            left: 7px;
+            position: absolute;
+            bottom: -7px;
+            width: 14px;
+          }
+        `;
+        level = css`
+          background-color: ${color};
+          border-radius: 2.5px;
+          width: 100%;
+        `;
+        smallValue = css`
+          margin: 0 ${spacingHorizontal}px !important;
+        `;
+        getSmallValueElement = (data: Data) => (
+          <h3 className={smallValue} style={{ color: data.color }}>
+            {data.number}
+            <span>{data.unit}</span>
+          </h3>
+        );
+        element = (
+          <>
+            <div className={`${container} tr-big-value`} style={{ zoom: `${bigValuePercentage}%` }}>
+              <div className={battery}>
+                {this.capacity.number !== null ? (
+                  <div
+                    className={level}
+                    style={{
+                      height: `${this.capacity.number > 100 ? 100 : this.capacity.number}%`,
+                    }}
+                  ></div>
+                ) : (
+                  undefined
+                )}
+              </div>
+              <h1 style={{ color: this.capacity.color }}>
+                {this.capacity.number}
+                <span>{this.capacity.unit}</span>
+              </h1>
+            </div>
+            <div className={`${container} tr-middle-value`} style={{ paddingTop: spacingVertical }}>
+              {getSmallValueElement(this.voltage)}
+              {showCurrent ? getSmallValueElement(this.current) : undefined}
+              {getSmallValueElement(this.resistance)}
+              {getSmallValueElement(this.temperature)}
+            </div>
+          </>
+        );
+        break;
+
+      case 'layout3':
+        battery = css`
+          border: 2px solid ${color};
+          border-radius: 5px;
+          display: inline-block;
+          height: 60px;
+          margin-bottom: 2px;
+          position: relative;
+          padding: 2px;
+          transform: rotate(180deg);
+          width: 32px;
+          zoom: 2;
+
+          &::after {
+            border-radius: 0 0 4px 4px;
+            border: 2px solid ${color};
+            background-color: ${color};
+            content: '';
+            display: block;
+            height: 6px;
+            left: 6px;
+            position: absolute;
+            bottom: -7px;
+            width: 15px;
+          }
+        `;
+        level = css`
+          background-color: ${color};
+          border-radius: 2.5px;
+          width: 100%;
+        `;
+        smallValue = css`
+          margin: 0 ${spacingHorizontal}px !important;
+        `;
+        getSmallValueElement = (data: Data) => (
+          <h3 className={smallValue} style={{ color: data.color }}>
+            {data.number}
+            <span>{data.unit}</span>
+          </h3>
+        );
+        element = (
+          <>
+            <div
+              className={`${container} tr-big-value`}
+              style={{ flexDirection: 'column', zoom: `${bigValuePercentage}%` }}
+            >
+              <div className={battery}>
+                {this.capacity.number !== null ? (
+                  <div
+                    className={level}
+                    style={{
+                      height: `${this.capacity.number > 100 ? 100 : this.capacity.number}%`,
+                    }}
+                  ></div>
+                ) : (
+                  undefined
+                )}
+              </div>
+              <h1 style={{ color: this.capacity.color }}>
+                {this.capacity.number}
+                <span>{this.capacity.unit}</span>
+              </h1>
+            </div>
+            <div className={`${container} tr-middle-value`} style={{ paddingTop: spacingVertical }}>
+              {getSmallValueElement(this.voltage)}
+              {showCurrent ? getSmallValueElement(this.current) : undefined}
+              {getSmallValueElement(this.resistance)}
+              {getSmallValueElement(this.temperature)}
+            </div>
+          </>
+        );
+        break;
+
+      case 'layout4':
+        battery = css`
+          border: 2px solid ${color};
+          border-radius: 5px;
+          display: inline-block;
+          height: 60px;
+          margin-bottom: 2px;
+          margin-top: 8px;
+          position: relative;
+          padding: 2px;
+          transform: rotate(180deg);
+          width: 32px;
+          zoom: 2;
+
+          &::after {
+            border-radius: 0 0 4px 4px;
+            border: 2px solid ${color};
+            background-color: ${color};
+            content: '';
+            display: block;
+            height: 6px;
+            left: 6px;
+            position: absolute;
+            bottom: -7px;
+            width: 15px;
+          }
+        `;
+        level = css`
+          background-color: ${color};
+          border-radius: 2.5px;
+          width: 100%;
+        `;
+        smallValue = css`
+          margin: ${spacingVertical}px 0 !important;
+        `;
+        getSmallValueElement = (data: Data) => (
+          <h3 className={smallValue} style={{ color: data.color }}>
+            {data.number}
+            <span>{data.unit}</span>
+          </h3>
+        );
+        element = (
+          <>
+            <div className={container}>
+              <div
+                className={`${container} tr-big-value`}
+                style={{ flexDirection: 'column', zoom: `${bigValuePercentage}%` }}
+              >
+                <div className={battery}>
+                  {this.capacity.number !== null ? (
+                    <div
+                      className={level}
+                      style={{
+                        height: `${this.capacity.number > 100 ? 100 : this.capacity.number}%`,
+                      }}
+                    ></div>
+                  ) : (
+                    undefined
+                  )}
+                </div>
+                <h1 style={{ color: this.capacity.color }}>
+                  {this.capacity.number}
+                  <span>{this.capacity.unit}</span>
+                </h1>
+              </div>
+
+              <div
+                className={`${container} tr-middle-value`}
+                style={{ flexDirection: 'column', marginLeft: spacingHorizontal }}
+              >
+                {getSmallValueElement(this.voltage)}
+                {showCurrent ? getSmallValueElement(this.current) : undefined}
+                {getSmallValueElement(this.resistance)}
+                {getSmallValueElement(this.temperature)}
+              </div>
+            </div>
+          </>
+        );
+        break;
+    }
+
+    return (
+      <div className="w3-display-container tr-full" ref={this.setZoom.bind(this)}>
+        <div className="w3-display-middle tr-wd-100" style={{ zoom }}>
+          {element}
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}

@@ -86,18 +86,18 @@ export const DCRectifierMonitor: React.FC<PanelProps> = props => {
           </h1>
         </div>
         <div className="w3-row tr-middle-value">
-          <div className="w3-third w3-center">
+          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
             <h3>
               220<span> VAC</span>
             </h3>
           </div>
-          <div className="w3-third w3-center">
+          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
             <h3 style={{ color: getColor(volt) }}>
               {getLastValue(volt)?.text}
               <span>{getLastValue(volt)?.suffix}</span>
             </h3>
           </div>
-          <div className="w3-third w3-center">
+          <div className="w3-col w3-center" style={{ width: '33.3%' }}>
             <h3>
               30<span> °C</span>
             </h3>

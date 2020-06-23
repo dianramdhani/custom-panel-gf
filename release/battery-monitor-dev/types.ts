@@ -1,7 +1,17 @@
-type SeriesSize = 'sm' | 'md' | 'lg';
+type DataMode = 'real' | 'dummy';
+export type Style = 'layout1' | 'layout2' | 'layout3' | 'layout4';
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
+export interface BatteryOptions {
+  style: Style;
+  showCurrent: boolean;
+  spacingVertical: number;
+  spacingHorizontal: number;
+  bigValuePercentage: number;
+  dataMode: DataMode;
+  dummyCapacity: number;
+  dummyVoltage: number;
+  dummyResistance: number;
+  dummyTemperature: number;
+  dummyCurrent: number;
+  smallValueColor: string;
 }

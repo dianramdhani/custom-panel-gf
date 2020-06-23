@@ -1,134 +1,305 @@
 import '../styles/w3.css';
 import '../styles/style.scss';
 
-import React from 'react';
-import { PanelProps, PanelData, DataFrame, getValueFormat } from '@grafana/data';
+import React, { PureComponent } from 'react';
+import { PanelProps } from '@grafana/data';
+import { css } from 'emotion';
 
-export const ThreePhaseMonitor: React.FC<PanelProps> = props => {
-  const data: PanelData = props.data,
-    currR = data.series.find(_ => _.name === 'currR'),
-    currS = data.series.find(_ => _.name === 'currS'),
-    currT = data.series.find(_ => _.name === 'currT'),
-    voltR = data.series.find(_ => _.name === 'voltR'),
-    voltS = data.series.find(_ => _.name === 'voltS'),
-    voltT = data.series.find(_ => _.name === 'voltT');
+import { ThreePhaseOptions, DataStyle } from 'types';
+import { Data, getColor, lastValueToData } from 'helper';
 
-  const getLastValue = (data: DataFrame | undefined) => {
-      if (data) {
-        const unit = data.fields[1].config.unit,
-          value = data.fields[1].values.get(0);
-        return getValueFormat(unit)(value);
-      } else {
-        return;
-      }
-    },
-    getColor = (data: DataFrame | undefined) => {
-      if (data) {
-        const value = data.fields[1].values.get(0),
-          steps = data.fields[1].config.thresholds?.steps || [];
+interface Props extends PanelProps<ThreePhaseOptions> {}
 
-        if (steps.length) {
-          const colorPalette: { [index: string]: any } = {
-            green: '#73BF69',
-            'dark-green': '#37872D',
-            'semi-dark-green': '#56A64B',
-            'light-green': '#96D98D',
-            'super-light-green': '#C8F2C2',
+export class ThreePhaseMonitor extends PureComponent<Props> {
+  readonly state: { zoom: number };
+  currentR: Data;
+  voltageR: Data;
+  currentS: Data;
+  voltageS: Data;
+  currentT: Data;
+  voltageT: Data;
+  frequency: Data;
+  totalActiveEnergy: Data;
 
-            yellow: '#FADE2A',
-            'dark-yellow': '#E0B400',
-            'semi-dark-yellow': '#F2CC0C',
-            'light-yellow': '#FFEE52',
-            'super-light-yellow': '#FFF899',
+  constructor(props: Props) {
+    super(props);
 
-            red: '#F2495C',
-            'dark-red': '#C4162A',
-            'semi-dark-red': '#E02F44',
-            'light-red': '#FF7383',
-            'super-light-red': '#FFA6B0',
-
-            blue: '#5794F2',
-            'dark-blue': '#1F60C4',
-            'semi-dark-blue': '#3274D9',
-            'light-blue': '#8AB8FF',
-            'super-light-blue': '#C0D8FF',
-
-            orange: '#FF9830',
-            'dark-orange': '#FA6400',
-            'semi-dark-orange': '#FF780A',
-            'light-orange': '#FFB357',
-            'super-light-orange': '#FFCB7D',
-
-            purple: '#B877D9',
-            'dark-purple': '#8F3BB8',
-            'semi-dark-purple': '#A352CC',
-            'light-purple': '#CA95E5',
-            'super-light-purple': '#DEB6F2',
-          };
-
-          let indexStep = steps.findIndex(step => step.value > value) - 1;
-          indexStep = indexStep === -2 ? steps.length - 1 : indexStep;
-
-          const color = colorPalette[steps[indexStep].color] || steps[indexStep].color;
-
-          return color;
-        } else {
-          return;
-        }
-      } else {
-        return;
-      }
+    this.state = {
+      zoom: 1,
     };
 
-  return (
-    <div className="w3-display-container" style={{ width: '100%', height: '100%' }}>
-      <div className="w3-display-middle" style={{ width: '100%' }}>
-        <div className="w3-center tr-big-value">
-          <h1>
-            25.421 <span> kWh</span>
-          </h1>
-        </div>
-        <div className="w3-row tr-big-value tr-middle-value">
-          <div className="w3-third w3-center">
-            <h5>R</h5>
-            <h1 style={{ color: getColor(currR) }}>
-              {getLastValue(currR)?.text}
-              <span>{getLastValue(currR)?.suffix}</span>
-            </h1>
-            <h3 style={{ color: getColor(voltR) }}>
-              {getLastValue(voltR)?.text}
-              <span>{getLastValue(voltR)?.suffix}</span>
-            </h3>
-          </div>
-          <div className="w3-third w3-center">
-            <h5>S</h5>
-            <h1 style={{ color: getColor(currS) }}>
-              {getLastValue(currS)?.text}
-              <span>{getLastValue(currS)?.suffix}</span>
-            </h1>
-            <h3 style={{ color: getColor(voltS) }}>
-              {getLastValue(voltS)?.text}
-              <span>{getLastValue(voltS)?.suffix}</span>
-            </h3>
-          </div>
-          <div className="w3-third w3-center">
-            <h5>T</h5>
-            <h1 style={{ color: getColor(currT) }}>
-              {getLastValue(currT)?.text}
-              <span>{getLastValue(currT)?.suffix}</span>
-            </h1>
-            <h3 style={{ color: getColor(voltT) }}>
-              {getLastValue(voltT)?.text}
-              <span>{getLastValue(voltT)?.suffix}</span>
-            </h3>
-          </div>
-        </div>
-        <div className="w3-center tr-middle-value">
-          <h3>
-            60 <span> Hz</span>
-          </h3>
+    this.currentR = this.voltageR = this.currentS = this.voltageS = this.currentT = this.voltageT = this.frequency = this.totalActiveEnergy = {
+      number: 0,
+      unit: '',
+      color: 'green',
+    };
+  }
+
+  render() {
+    const { dataMode, style } = this.props.options;
+    switch (dataMode) {
+      case 'dummy':
+        const {
+          dummyCurrentR,
+          dummyCurrentS,
+          dummyCurrentT,
+          dummyFrequency,
+          dummyTotalActiveEnergy,
+          dummyVoltageR,
+          dummyVoltageS,
+          dummyVoltageT,
+        } = this.props.options;
+        const setValue = (number: number, unit: string): Data => ({
+          number,
+          unit,
+          color: getColor(number, this.props.fieldConfig.defaults.thresholds?.steps),
+        });
+        this.currentR = setValue(dummyCurrentR, ' A');
+        this.currentS = setValue(dummyCurrentS, ' A');
+        this.currentT = setValue(dummyCurrentT, ' A');
+        this.frequency = setValue(dummyFrequency, ' Hz');
+        this.totalActiveEnergy = setValue(dummyTotalActiveEnergy, ' kWh');
+        this.voltageR = setValue(dummyVoltageR, ' V');
+        this.voltageS = setValue(dummyVoltageS, ' V');
+        this.voltageT = setValue(dummyVoltageT, ' V');
+        break;
+
+      case 'real':
+        const data = this.props.data,
+          currR = data.series.find(_ => _.name === 'currR'),
+          currS = data.series.find(_ => _.name === 'currS'),
+          currT = data.series.find(_ => _.name === 'currT'),
+          voltR = data.series.find(_ => _.name === 'voltR'),
+          voltS = data.series.find(_ => _.name === 'voltS'),
+          voltT = data.series.find(_ => _.name === 'voltT'),
+          frequency = data.series.find(_ => _.name === 'frequency'),
+          totActEnergy = data.series.find(_ => _.name === 'totActEnergy');
+
+        this.currentR = lastValueToData(currR);
+        this.currentS = lastValueToData(currS);
+        this.currentT = lastValueToData(currT);
+        this.voltageR = lastValueToData(voltR);
+        this.voltageS = lastValueToData(voltS);
+        this.voltageT = lastValueToData(voltT);
+        this.frequency = lastValueToData(frequency);
+        this.totalActiveEnergy = lastValueToData(totActEnergy);
+        break;
+    }
+
+    return this.layoutSelector(style);
+  }
+
+  private layoutSelector(style: DataStyle): JSX.Element {
+    const { zoom } = this.state,
+      spacingVertical = this.props.options.spacingVertical || 0,
+      spacingHorizontal = this.props.options.spacingHorizontal || 0,
+      container = css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: ${spacingVertical}px 0 !important;
+      `,
+      setSpacingHorizontal = css`
+        display: block-inline;
+        padding: 0 ${spacingHorizontal}px !important;
+      `,
+      hrElement = (
+        <hr
+          className={css`
+            width: 550px;
+            background-color: rgb(204, 204, 204);
+            margin: 0 auto;
+          `}
+        />
+      );
+
+    let element: JSX.Element = <h1 className="w3-center w3-text-blue-gray">No Data</h1>;
+    switch (style) {
+      case 'layout1':
+        element = (
+          <>
+            <div className={`${container} tr-big-value`}>
+              <h1 style={{ color: this.totalActiveEnergy.color }}>
+                {this.totalActiveEnergy.number}
+                <span>{this.totalActiveEnergy.unit}</span>
+              </h1>
+            </div>
+            {hrElement}
+            <div className={`${container} tr-big-value tr-middle-value`}>
+              <div className={`${setSpacingHorizontal} w3-center`}>
+                <h5>R</h5>
+                <h1 style={{ color: this.currentR.color }}>
+                  {this.currentR.number}
+                  <span>{this.currentR.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageR.color }}>
+                  {this.voltageR.number}
+                  <span>{this.voltageR.unit}</span>
+                </h3>
+              </div>
+              <div className={`${setSpacingHorizontal} w3-center w3-border-right w3-border-left`}>
+                <h5>S</h5>
+                <h1 style={{ color: this.currentS.color }}>
+                  {this.currentS.number}
+                  <span>{this.currentS.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageS.color }}>
+                  {this.voltageS.number}
+                  <span>{this.voltageS.unit}</span>
+                </h3>
+              </div>
+              <div className={`${setSpacingHorizontal} w3-center`}>
+                <h5>T</h5>
+                <h1 style={{ color: this.currentT.color }}>
+                  {this.currentT.number}
+                  <span>{this.currentT.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageT.color }}>
+                  {this.voltageT.number}
+                  <span>{this.voltageT.unit}</span>
+                </h3>
+              </div>
+            </div>
+            {hrElement}
+            <div className={`${container} tr-middle-value`}>
+              <h3 style={{ color: this.frequency.color }}>
+                {this.frequency.number}
+                <span>{this.frequency.unit}</span>
+              </h3>
+            </div>
+          </>
+        );
+        break;
+
+      case 'layout2':
+        element = (
+          <>
+            <div className={`${container} tr-big-value tr-middle-value`}>
+              <h1 className={setSpacingHorizontal} style={{ color: this.totalActiveEnergy.color }}>
+                {this.totalActiveEnergy.number}
+                <span>{this.totalActiveEnergy.unit}</span>
+              </h1>
+              <h3 className={setSpacingHorizontal} style={{ color: this.frequency.color }}>
+                {this.frequency.number}
+                <span>{this.frequency.unit}</span>
+              </h3>
+            </div>
+            {hrElement}
+            <div className={`${container} tr-big-value tr-middle-value`}>
+              <div className={`${setSpacingHorizontal} w3-center`}>
+                <h5>R</h5>
+                <h1 style={{ color: this.currentR.color }}>
+                  {this.currentR.number}
+                  <span>{this.currentR.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageR.color }}>
+                  {this.voltageR.number}
+                  <span>{this.voltageR.unit}</span>
+                </h3>
+              </div>
+              <div className={`${setSpacingHorizontal} w3-center w3-border-right w3-border-left`}>
+                <h5>S</h5>
+                <h1 style={{ color: this.currentS.color }}>
+                  {this.currentS.number}
+                  <span>{this.currentS.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageS.color }}>
+                  {this.voltageS.number}
+                  <span>{this.voltageS.unit}</span>
+                </h3>
+              </div>
+              <div className={`${setSpacingHorizontal} w3-center`}>
+                <h5>T</h5>
+                <h1 style={{ color: this.currentT.color }}>
+                  {this.currentT.number}
+                  <span>{this.currentT.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageT.color }}>
+                  {this.voltageT.number}
+                  <span>{this.voltageT.unit}</span>
+                </h3>
+              </div>
+            </div>
+          </>
+        );
+        break;
+
+      case 'layout3':
+        element = (
+          <>
+            <div className={`${container} tr-big-value tr-middle-value`}>
+              <div className={`${setSpacingHorizontal} w3-center`}>
+                <h5>R</h5>
+                <h1 style={{ color: this.currentR.color }}>
+                  {this.currentR.number}
+                  <span>{this.currentR.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageR.color }}>
+                  {this.voltageR.number}
+                  <span>{this.voltageR.unit}</span>
+                </h3>
+              </div>
+              <div className={`${setSpacingHorizontal} w3-center w3-border-right w3-border-left`}>
+                <h5>S</h5>
+                <h1 style={{ color: this.currentS.color }}>
+                  {this.currentS.number}
+                  <span>{this.currentS.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageS.color }}>
+                  {this.voltageS.number}
+                  <span>{this.voltageS.unit}</span>
+                </h3>
+              </div>
+              <div className={`${setSpacingHorizontal} w3-center`}>
+                <h5>T</h5>
+                <h1 style={{ color: this.currentT.color }}>
+                  {this.currentT.number}
+                  <span>{this.currentT.unit}</span>
+                </h1>
+                <h3 style={{ color: this.voltageT.color }}>
+                  {this.voltageT.number}
+                  <span>{this.voltageT.unit}</span>
+                </h3>
+              </div>
+            </div>
+            {hrElement}
+            <div className={`${container} tr-big-value tr-middle-value`}>
+              <h1 className={setSpacingHorizontal} style={{ color: this.totalActiveEnergy.color }}>
+                {this.totalActiveEnergy.number}
+                <span>{this.totalActiveEnergy.unit}</span>
+              </h1>
+              <h3 className={setSpacingHorizontal} style={{ color: this.frequency.color }}>
+                {this.frequency.number}
+                <span>{this.frequency.unit}</span>
+              </h3>
+            </div>
+          </>
+        );
+        break;
+    }
+
+    return (
+      <div className="w3-display-container tr-full" ref={this.setZoom.bind(this)}>
+        <div className="w3-display-middle tr-wd-100" style={{ zoom }}>
+          {element}
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+
+  private setZoom(element: HTMLDivElement) {
+    const maxWidthPanel = 600,
+      minZoom = 0.5;
+
+    if (element) {
+      const { clientWidth } = element;
+      if (clientWidth < maxWidthPanel) {
+        let zoom = clientWidth / maxWidthPanel;
+        zoom = zoom < minZoom ? minZoom : zoom;
+        this.setState({ zoom });
+      } else {
+        this.setState({ zoom: 1 });
+      }
+    }
+  }
+}

@@ -1,7 +1,12 @@
-type SeriesSize = 'sm' | 'md' | 'lg';
+type DataMode = 'real' | 'dummy';
+type DataStatus = 'NORMAL' | 'CRITICAL' | 'MAJOR' | 'MINOR';
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
+export interface SiteInformationOptions {
+  dataMode: DataMode;
+  dummySite: string;
+  dummyRegion: string;
+  dummyStatus: DataStatus;
+  dummyLastConnected: string;
+  dummyLatitude: number;
+  dummyLongitude: number;
 }

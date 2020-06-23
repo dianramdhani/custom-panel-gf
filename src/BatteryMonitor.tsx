@@ -16,6 +16,7 @@ export class BatteryMonitor extends PureComponent<Props> {
   voltage: Data;
   resistance: Data;
   temperature: Data;
+  current: Data;
 
   constructor(props: Props) {
     super(props);
@@ -24,7 +25,11 @@ export class BatteryMonitor extends PureComponent<Props> {
       zoom: 1,
     };
 
-    this.capacity = this.voltage = this.resistance = this.temperature = { number: 0, unit: '', color: 'green' };
+    this.capacity = this.voltage = this.resistance = this.temperature = this.current = {
+      number: 0,
+      unit: '',
+      color: 'green',
+    };
   }
 
   render() {
@@ -32,7 +37,7 @@ export class BatteryMonitor extends PureComponent<Props> {
 
     switch (dataMode) {
       case 'dummy':
-        const { dummyCapacity, dummyTemperature, dummyResistance, dummyVoltage } = this.props.options;
+        const { dummyCapacity, dummyTemperature, dummyResistance, dummyVoltage, dummyCurrent } = this.props.options;
         const setValue = (number: number, unit: string): Data => ({
           number,
           unit,
@@ -42,6 +47,7 @@ export class BatteryMonitor extends PureComponent<Props> {
         this.resistance = setValue(dummyResistance, ' Ω');
         this.voltage = setValue(dummyVoltage, ' V');
         this.temperature = setValue(dummyTemperature, ' °C');
+        this.current = setValue(dummyCurrent, ' A');
         break;
       case 'real':
         const data = this.props.data,
@@ -81,6 +87,7 @@ export class BatteryMonitor extends PureComponent<Props> {
     const { zoom } = this.state,
       spacingVertical = this.props.options.spacingVertical || 0,
       spacingHorizontal = this.props.options.spacingHorizontal || 0,
+      { showCurrent } = this.props.options,
       color = this.capacity.color,
       container = css`
         display: flex;
@@ -91,6 +98,7 @@ export class BatteryMonitor extends PureComponent<Props> {
     let battery: string,
       level: string,
       smallValue: string,
+      getSmallValueElement: Function,
       element: JSX.Element = <h1 className="w3-center w3-text-blue-gray">No Data</h1>;
 
     switch (style) {
@@ -127,6 +135,12 @@ export class BatteryMonitor extends PureComponent<Props> {
         smallValue = css`
           margin: 0 ${spacingHorizontal}px !important;
         `;
+        getSmallValueElement = (data: Data) => (
+          <h3 className={smallValue} style={{ color: data.color }}>
+            {data.number}
+            <span>{data.unit}</span>
+          </h3>
+        );
         element = (
           <>
             <div className={`${container} tr-big-value`}>
@@ -148,18 +162,10 @@ export class BatteryMonitor extends PureComponent<Props> {
               </h1>
             </div>
             <div className={`${container} tr-middle-value`} style={{ paddingTop: spacingVertical }}>
-              <h3 className={smallValue} style={{ color: this.voltage.color }}>
-                {this.voltage.number}
-                <span>{this.voltage.unit}</span>
-              </h3>
-              <h3 className={smallValue} style={{ color: this.resistance.color }}>
-                {this.resistance.number}
-                <span>{this.resistance.unit}</span>
-              </h3>
-              <h3 className={smallValue} style={{ color: this.temperature.color }}>
-                {this.temperature.number}
-                <span>{this.temperature.unit}</span>
-              </h3>
+              {getSmallValueElement(this.voltage)}
+              {showCurrent ? getSmallValueElement(this.current) : undefined}
+              {getSmallValueElement(this.resistance)}
+              {getSmallValueElement(this.temperature)}
             </div>
           </>
         );
@@ -199,6 +205,12 @@ export class BatteryMonitor extends PureComponent<Props> {
         smallValue = css`
           margin: 0 ${spacingHorizontal}px !important;
         `;
+        getSmallValueElement = (data: Data) => (
+          <h3 className={smallValue} style={{ color: data.color }}>
+            {data.number}
+            <span>{data.unit}</span>
+          </h3>
+        );
         element = (
           <>
             <div className={`${container} tr-big-value`}>
@@ -220,18 +232,10 @@ export class BatteryMonitor extends PureComponent<Props> {
               </h1>
             </div>
             <div className={`${container} tr-middle-value`} style={{ paddingTop: spacingVertical }}>
-              <h3 className={smallValue} style={{ color: this.voltage.color }}>
-                {this.voltage.number}
-                <span>{this.voltage.unit}</span>
-              </h3>
-              <h3 className={smallValue} style={{ color: this.resistance.color }}>
-                {this.resistance.number}
-                <span>{this.resistance.unit}</span>
-              </h3>
-              <h3 className={smallValue} style={{ color: this.temperature.color }}>
-                {this.temperature.number}
-                <span>{this.temperature.unit}</span>
-              </h3>
+              {getSmallValueElement(this.voltage)}
+              {showCurrent ? getSmallValueElement(this.current) : undefined}
+              {getSmallValueElement(this.resistance)}
+              {getSmallValueElement(this.temperature)}
             </div>
           </>
         );
@@ -271,6 +275,12 @@ export class BatteryMonitor extends PureComponent<Props> {
         smallValue = css`
           margin: 0 ${spacingHorizontal}px !important;
         `;
+        getSmallValueElement = (data: Data) => (
+          <h3 className={smallValue} style={{ color: data.color }}>
+            {data.number}
+            <span>{data.unit}</span>
+          </h3>
+        );
         element = (
           <>
             <div className={`${container} tr-big-value`} style={{ flexDirection: 'column' }}>
@@ -292,18 +302,10 @@ export class BatteryMonitor extends PureComponent<Props> {
               </h1>
             </div>
             <div className={`${container} tr-middle-value`} style={{ paddingTop: spacingVertical }}>
-              <h3 className={smallValue} style={{ color: this.voltage.color }}>
-                {this.voltage.number}
-                <span>{this.voltage.unit}</span>
-              </h3>
-              <h3 className={smallValue} style={{ color: this.resistance.color }}>
-                {this.resistance.number}
-                <span>{this.resistance.unit}</span>
-              </h3>
-              <h3 className={smallValue} style={{ color: this.temperature.color }}>
-                {this.temperature.number}
-                <span>{this.temperature.unit}</span>
-              </h3>
+              {getSmallValueElement(this.voltage)}
+              {showCurrent ? getSmallValueElement(this.current) : undefined}
+              {getSmallValueElement(this.resistance)}
+              {getSmallValueElement(this.temperature)}
             </div>
           </>
         );
@@ -344,6 +346,12 @@ export class BatteryMonitor extends PureComponent<Props> {
         smallValue = css`
           margin: ${spacingVertical}px 0 !important;
         `;
+        getSmallValueElement = (data: Data) => (
+          <h3 className={smallValue} style={{ color: data.color }}>
+            {data.number}
+            <span>{data.unit}</span>
+          </h3>
+        );
         element = (
           <>
             <div className={container}>
@@ -370,18 +378,10 @@ export class BatteryMonitor extends PureComponent<Props> {
                 className={`${container} tr-middle-value`}
                 style={{ flexDirection: 'column', marginLeft: spacingHorizontal }}
               >
-                <h3 className={smallValue} style={{ color: this.voltage.color }}>
-                  {this.voltage.number}
-                  <span>{this.voltage.unit}</span>
-                </h3>
-                <h3 className={smallValue} style={{ color: this.resistance.color }}>
-                  {this.resistance.number}
-                  <span>{this.resistance.unit}</span>
-                </h3>
-                <h3 className={smallValue} style={{ color: this.temperature.color }}>
-                  {this.temperature.number}
-                  <span>{this.temperature.unit}</span>
-                </h3>
+                {getSmallValueElement(this.voltage)}
+                {showCurrent ? getSmallValueElement(this.current) : undefined}
+                {getSmallValueElement(this.resistance)}
+                {getSmallValueElement(this.temperature)}
               </div>
             </div>
           </>

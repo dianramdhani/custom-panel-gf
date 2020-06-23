@@ -7,6 +7,11 @@ const isDummy = (currentConfig: BatteryOptions) => currentConfig.dataMode === 'd
 export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
   .setPanelOptions(builder =>
     builder
+      .addBooleanSwitch({
+        path: 'showCurrent',
+        defaultValue: false,
+        name: 'Show Current',
+      })
       .addSelect({
         path: 'style',
         defaultValue: 'layout1',
@@ -70,6 +75,12 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
         defaultValue: 30,
         name: 'Temperature',
         showIf: isDummy,
+      })
+      .addNumberInput({
+        path: 'dummyCurrent',
+        defaultValue: 1.2,
+        name: 'Current',
+        showIf: (currentConfig: BatteryOptions) => isDummy(currentConfig) && currentConfig.showCurrent,
       })
   )
   .useFieldConfig();

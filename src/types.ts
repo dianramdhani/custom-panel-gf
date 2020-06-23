@@ -13,4 +13,5 @@ export interface BatteryOptions {
   dummyResistance: number;
   dummyTemperature: number;
   dummyCurrent: number;
+  smallValueColor: string;
 }

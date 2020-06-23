@@ -87,5 +87,11 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
         name: 'Temperature',
         showIf: isDummy,
       })
+      .addTextInput({
+        path: 'smallValueColor',
+        defaultValue: 'gray',
+        name: 'Small Value Text Color',
+        showIf: isDummy,
+      })
   )
   .useFieldConfig();

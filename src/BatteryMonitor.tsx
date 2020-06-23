@@ -37,13 +37,24 @@ export class BatteryMonitor extends PureComponent<Props> {
 
     switch (dataMode) {
       case 'dummy':
-        const { dummyCapacity, dummyTemperature, dummyResistance, dummyVoltage, dummyCurrent } = this.props.options;
+        const {
+          dummyCapacity,
+          dummyTemperature,
+          dummyResistance,
+          dummyVoltage,
+          dummyCurrent,
+          smallValueColor,
+        } = this.props.options;
         const setValue = (number: number, unit: string): Data => ({
           number,
           unit,
-          color: getColor(number, this.props.fieldConfig.defaults.thresholds?.steps),
+          color: smallValueColor,
         });
-        this.capacity = setValue(dummyCapacity, ' %');
+        this.capacity = {
+          number: dummyCapacity,
+          unit: ' %',
+          color: getColor(dummyCapacity, this.props.fieldConfig.defaults.thresholds?.steps),
+        };
         this.resistance = setValue(dummyResistance, ' Ω');
         this.voltage = setValue(dummyVoltage, ' V');
         this.temperature = setValue(dummyTemperature, ' °C');

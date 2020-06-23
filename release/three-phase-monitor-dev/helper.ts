@@ -12,7 +12,7 @@ export function lastValueToData(data: DataFrame | undefined): Data {
       number = data.fields[1].values.get(0),
       valueFormat = getValueFormat(unit)(number);
     return {
-      number,
+      number: Number(valueFormat.text),
       unit: valueFormat.suffix || '',
       color: getColor(number, data.fields[1].config.thresholds?.steps),
     };

@@ -86,13 +86,11 @@ export class BatteryMonitor extends PureComponent<Props> {
         display: flex;
         justify-content: center;
         align-items: center;
-      `,
-      smallValue = css`
-        margin: 0 ${spacingHorizontal}px !important;
       `;
 
     let battery: string,
       level: string,
+      smallValue: string,
       element: JSX.Element = <h1 className="w3-center w3-text-blue-gray">No Data</h1>;
 
     switch (style) {
@@ -125,6 +123,9 @@ export class BatteryMonitor extends PureComponent<Props> {
           background-color: ${color};
           border-radius: 2.5px;
           height: 100%;
+        `;
+        smallValue = css`
+          margin: 0 ${spacingHorizontal}px !important;
         `;
         element = (
           <>
@@ -195,6 +196,9 @@ export class BatteryMonitor extends PureComponent<Props> {
           border-radius: 2.5px;
           width: 100%;
         `;
+        smallValue = css`
+          margin: 0 ${spacingHorizontal}px !important;
+        `;
         element = (
           <>
             <div className={`${container} tr-big-value`}>
@@ -264,6 +268,9 @@ export class BatteryMonitor extends PureComponent<Props> {
           border-radius: 2.5px;
           width: 100%;
         `;
+        smallValue = css`
+          margin: 0 ${spacingHorizontal}px !important;
+        `;
         element = (
           <>
             <div className={`${container} tr-big-value`} style={{ flexDirection: 'column' }}>
@@ -297,6 +304,85 @@ export class BatteryMonitor extends PureComponent<Props> {
                 {this.temperature.number}
                 <span>{this.temperature.unit}</span>
               </h3>
+            </div>
+          </>
+        );
+        break;
+
+      case 'layout4':
+        battery = css`
+          border: 2px solid ${color};
+          border-radius: 5px;
+          display: inline-block;
+          height: 60px;
+          margin-bottom: 2px;
+          margin-top: 8px;
+          position: relative;
+          padding: 2px;
+          transform: rotate(180deg);
+          width: 32px;
+          zoom: 2;
+
+          &::after {
+            border-radius: 0 0 4px 4px;
+            border: 2px solid ${color};
+            background-color: ${color};
+            content: '';
+            display: block;
+            height: 6px;
+            left: 6px;
+            position: absolute;
+            bottom: -7px;
+            width: 15px;
+          }
+        `;
+        level = css`
+          background-color: ${color};
+          border-radius: 2.5px;
+          width: 100%;
+        `;
+        smallValue = css`
+          margin: ${spacingVertical}px 0 !important;
+        `;
+        element = (
+          <>
+            <div className={container}>
+              <div className={`${container} tr-big-value`} style={{ flexDirection: 'column' }}>
+                <div className={battery}>
+                  {this.capacity.number !== null ? (
+                    <div
+                      className={level}
+                      style={{
+                        height: `${this.capacity.number > 100 ? 100 : this.capacity.number}%`,
+                      }}
+                    ></div>
+                  ) : (
+                    undefined
+                  )}
+                </div>
+                <h1 style={{ color: this.capacity.color }}>
+                  {this.capacity.number}
+                  <span>{this.capacity.unit}</span>
+                </h1>
+              </div>
+
+              <div
+                className={`${container} tr-middle-value`}
+                style={{ flexDirection: 'column', marginLeft: spacingHorizontal }}
+              >
+                <h3 className={smallValue} style={{ color: this.voltage.color }}>
+                  {this.voltage.number}
+                  <span>{this.voltage.unit}</span>
+                </h3>
+                <h3 className={smallValue} style={{ color: this.resistance.color }}>
+                  {this.resistance.number}
+                  <span>{this.resistance.unit}</span>
+                </h3>
+                <h3 className={smallValue} style={{ color: this.temperature.color }}>
+                  {this.temperature.number}
+                  <span>{this.temperature.unit}</span>
+                </h3>
+              </div>
             </div>
           </>
         );

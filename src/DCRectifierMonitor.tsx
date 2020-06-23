@@ -61,6 +61,7 @@ export class DCRectifierMonitor extends PureComponent<Props> {
     const { zoom } = this.state,
       spacingVertical = this.props.options.spacingVertical || 0,
       spacingHorizontal = this.props.options.spacingHorizontal || 0,
+      bigValuePercentage = this.props.options.bigValuePercentage || 100,
       container = css`
         display: flex;
         justify-content: center;
@@ -75,7 +76,7 @@ export class DCRectifierMonitor extends PureComponent<Props> {
       <div className="w3-display-container tr-full" ref={this.setZoom.bind(this)}>
         <div className="w3-display-middle tr-wd-100" style={{ zoom }}>
           <div className={`${container} tr-big-value`}>
-            <h1 style={{ color: this.current.color }}>
+            <h1 style={{ color: this.current.color, zoom: `${bigValuePercentage}%` }}>
               {this.current.number}
               <span>{this.current.unit}</span>
             </h1>

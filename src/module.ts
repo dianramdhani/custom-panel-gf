@@ -17,6 +17,11 @@ export const plugin = new PanelPlugin<DCRectifierOptions>(DCRectifierMonitor)
         defaultValue: 16,
         name: 'Spacing Horizontal',
       })
+      .addNumberInput({
+        path: 'bigValuePercentage',
+        defaultValue: 100,
+        name: 'Big Value Percentage',
+      })
       .addRadio({
         path: 'dataMode',
         defaultValue: 'dummy',

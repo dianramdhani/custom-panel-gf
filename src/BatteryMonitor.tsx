@@ -87,7 +87,7 @@ export class BatteryMonitor extends PureComponent<Props> {
     const { zoom } = this.state,
       spacingVertical = this.props.options.spacingVertical || 0,
       spacingHorizontal = this.props.options.spacingHorizontal || 0,
-      { showCurrent } = this.props.options,
+      { showCurrent, bigValuePercentage } = this.props.options,
       color = this.capacity.color,
       container = css`
         display: flex;
@@ -143,7 +143,7 @@ export class BatteryMonitor extends PureComponent<Props> {
         );
         element = (
           <>
-            <div className={`${container} tr-big-value`}>
+            <div className={`${container} tr-big-value`} style={{ zoom: `${bigValuePercentage}%` }}>
               <div className={battery}>
                 {this.capacity.number !== null ? (
                   <div
@@ -213,7 +213,7 @@ export class BatteryMonitor extends PureComponent<Props> {
         );
         element = (
           <>
-            <div className={`${container} tr-big-value`}>
+            <div className={`${container} tr-big-value`} style={{ zoom: `${bigValuePercentage}%` }}>
               <div className={battery}>
                 {this.capacity.number !== null ? (
                   <div
@@ -283,7 +283,10 @@ export class BatteryMonitor extends PureComponent<Props> {
         );
         element = (
           <>
-            <div className={`${container} tr-big-value`} style={{ flexDirection: 'column' }}>
+            <div
+              className={`${container} tr-big-value`}
+              style={{ flexDirection: 'column', zoom: `${bigValuePercentage}%` }}
+            >
               <div className={battery}>
                 {this.capacity.number !== null ? (
                   <div
@@ -355,7 +358,10 @@ export class BatteryMonitor extends PureComponent<Props> {
         element = (
           <>
             <div className={container}>
-              <div className={`${container} tr-big-value`} style={{ flexDirection: 'column' }}>
+              <div
+                className={`${container} tr-big-value`}
+                style={{ flexDirection: 'column', zoom: `${bigValuePercentage}%` }}
+              >
                 <div className={battery}>
                   {this.capacity.number !== null ? (
                     <div

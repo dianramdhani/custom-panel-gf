@@ -6,6 +6,7 @@ export interface BatteryOptions {
   showCurrent: boolean;
   spacingVertical: number;
   spacingHorizontal: number;
+  bigValuePercentage: number;
   dataMode: DataMode;
   dummyCapacity: number;
   dummyVoltage: number;

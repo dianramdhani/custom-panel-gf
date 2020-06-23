@@ -35,6 +35,11 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
         defaultValue: 16,
         name: 'Spacing Horizontal',
       })
+      .addNumberInput({
+        path: 'bigValuePercentage',
+        defaultValue: 100,
+        name: 'Big Value Percentage',
+      })
       .addRadio({
         path: 'dataMode',
         defaultValue: 'dummy',
@@ -65,6 +70,12 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
         showIf: isDummy,
       })
       .addNumberInput({
+        path: 'dummyCurrent',
+        defaultValue: 1.2,
+        name: 'Current',
+        showIf: (currentConfig: BatteryOptions) => isDummy(currentConfig) && currentConfig.showCurrent,
+      })
+      .addNumberInput({
         path: 'dummyResistance',
         defaultValue: 5,
         name: 'Resistance',
@@ -75,12 +86,6 @@ export const plugin = new PanelPlugin<BatteryOptions>(BatteryMonitor)
         defaultValue: 30,
         name: 'Temperature',
         showIf: isDummy,
-      })
-      .addNumberInput({
-        path: 'dummyCurrent',
-        defaultValue: 1.2,
-        name: 'Current',
-        showIf: (currentConfig: BatteryOptions) => isDummy(currentConfig) && currentConfig.showCurrent,
       })
   )
   .useFieldConfig();
